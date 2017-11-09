@@ -100,7 +100,7 @@ $playerLostWeek = array();
 $playerPointTenMatch = array();
 $players = array('Doan','Duy','Ha','Linh','Phuong','Tri','Thanh','Hiep');
 $scheduleTypes = array('Cafe','Bun','Pho','Banh canh','Hu tieu','Xoi','Mi','Bun cha ca','Op la bo','Banh cuon');
-
+$nickNameList = array('Doan' => 'Doan Diêm Dúa','Duy' => 'Duy Dặt Dẹo','Ha' => 'Hà Hùng Hồn','Linh' => 'Linh Lạc Loài','Phuong' => 'Phương Phúng Phính','Tri' => 'Trí Trốn Tránh','Thanh' => 'Thạnh Thướt Tha','Hiep' => 'Hiep');
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
 // Check connection
@@ -266,7 +266,7 @@ arsort($playerPointTenMatch);
 $history = getMatchHistory($conn);
 $scheduleHistory =getScheduleHistory($conn);
 
-if ($saveMsg == '') $saveMsg = "Congratulations!!! The player of the week is ".getMostPlayer($playerWinnerWeek) .".";
+if ($saveMsg == '') $saveMsg = "Congratulations!!! The player of the week is ".getAchivementPlayer(getMostPlayer($playerWinnerWeek)) .".";
 
 // Feature function
 function checkInput($data) {
@@ -285,9 +285,46 @@ function convertTime($datetime)
 }
 
 function getMostPlayer($array) {
-	$max = max($array);
-	$key = array_search($max, $array);
-	return $key;
+	$max = 0;
+	$player = array();
+	foreach ($array as $key => $value) {
+		if ($max < $value)
+		{
+			$max = $value;
+		}
+	}
+	foreach ($array as $key => $value) {
+		if ($max == $value)
+		{
+			$player[] = $key;
+		}
+	}
+	return $player;
+}
+
+function getPlayer($key) {
+	$conn = $GLOBALS['conn'];
+	$nickNameList = $GLOBALS['nickNameList'];
+	$playerWinnerWeek = $GLOBALS['playerWinnerWeek'];
+	$playerWinner = $GLOBALS['playerWinner'];
+	$playerLostWeek = $GLOBALS['playerLostWeek'];
+	$smartestList = getSmarterPlayer($conn, $playerLostWeek);
+	$playerSmarter = $smartestList[0];
+	$playerLost = $GLOBALS['playerLost'];
+	$nickName = $nickNameList[$key];
+	$achive = '';
+	if (in_array($key, getMostPlayer($playerWinnerWeek)))
+		$achive = 'a1';
+	if (in_array($key, getMostPlayer($playerWinner)))
+		$achive = 'a2';
+	if (in_array($key, $playerSmarter))
+		$achive = 'a3';
+	if (in_array($key, getMostPlayer($playerLostWeek)))
+		$achive = 'a4';
+	if (in_array($key, getMostPlayer($playerLost)))
+		$achive = 'a5';
+	$html = "<span id='$key' class='$achive'>$nickName</span>";
+	return $html;
 }
 
 function getWinTeam($team,$array) {
@@ -413,7 +450,7 @@ function getPointTenMatch($conn, $player)
 function getSmarterPlayer($conn, $playerLostWeek)
 {
 	$min = max($playerLostWeek);
-	$player = '';
+	$player = array();
 	foreach ($playerLostWeek as $key => $value) {
 		$para = '"' . $key . '"';
 		$sql = "SELECT * FROM schedule WHERE (schedule_data LIKE '%$para%' AND YEARWEEK(datetime) = YEARWEEK(NOW())) ORDER BY id DESC";
@@ -421,10 +458,29 @@ function getSmarterPlayer($conn, $playerLostWeek)
 		if ($min > $value && $result->num_rows > 0)
 		{
 			$min = $value;
-			$player = $key;
+		}
+	}
+	foreach ($playerLostWeek as $key => $value) {
+		$para = '"' . $key . '"';
+		$sql = "SELECT * FROM schedule WHERE (schedule_data LIKE '%$para%' AND YEARWEEK(datetime) = YEARWEEK(NOW())) ORDER BY id DESC";
+		$result = $conn->query($sql);
+		if ($min == $value && $result->num_rows > 0)
+		{
+			$player[] = $key;
 		}
 	}
 	return array($player,$min);
+}
+
+function getAchivementPlayer($list)
+{
+	$achive = '';
+	foreach ($list as $value) {
+		if ($achive == '')
+			$achive = getPlayer($value);
+		else $achive = $achive . ' & ' . getPlayer($value);
+	}
+	return $achive;
 }
 
 function getFormTenMatch($conn, $player)
@@ -833,7 +889,7 @@ function sendMessage($msg){
 						<?php $res = getFormTenSchedule($conn, $key); ?>
 						<tr>
 							<td><?php echo $p; ?></td>
-							<td><?php echo $key; ?></td>
+							<td><?php echo getPlayer($key); ?></td>
 							<td><?php echo $playerWinner[$key]; ?></td>
 							<td><?php echo $value - $playerWinner[$key] * 3; ?></td>
 							<td><?php echo $playerLost[$key]; ?></td>
@@ -871,7 +927,7 @@ function sendMessage($msg){
 							<tr>
 								<td><input type="checkbox" name="player[]" value="<?php echo $key ?>" <?php if ($key != 'Hiep') echo 'checked'; ?>/></td>
 								<td><?php echo $p; ?></td>
-								<td><?php echo $key; ?></td>
+								<td><?php echo getPlayer($key); ?></td>
 								<td><?php echo $res[0]; ?></td>
 								<td><?php echo $res[1]; ?></td>
 								<td><?php echo $playerGD[$key]; ?></td>
@@ -913,7 +969,7 @@ function sendMessage($msg){
 					<?php for ($j=0; $j < 3; $j++): ?>
 						<?php $a = $j; if ($j == 2) $b = 0; else $b = $a + 1; ?>
 						<tr>
-							<td><?php echo $team[$a][0] . ' - ' . $team[$a][1] . ' ' . getMatePercent($conn, $team[$a]); ?></td>
+							<td><?php echo getPlayer($team[$a][0]) . ' - ' . getPlayer($team[$a][1]) . ' ' . getMatePercent($conn, $team[$a]); ?></td>
 							<td class="col-xs-2 warning">
 								<select class="form-control"  name="orangepoint[]">
 									<option value="0">0</option>
@@ -934,14 +990,14 @@ function sendMessage($msg){
 									<option value="5">5</option>
 								</select>
 							</td>
-							<td><?php echo $team[$b][0] . ' - ' . $team[$b][1] . ' ' . getMatePercent($conn, $team[$b]); ?></td>
+							<td><?php echo getPlayer($team[$b][0]) . ' - ' . getPlayer($team[$b][1]) . ' ' . getMatePercent($conn, $team[$b]); ?></td>
 						</tr>
 					<?php endfor; ?>
 				<?php else: ?>
 					<?php for ($j=0; $j < 3; $j++): ?>
 						<?php $a = 0; $b = 1; if ($j == 1) {$b = 0; $a = 1;} ?>
 						<tr>
-							<td><?php echo $team[$a][0] . ' - ' . $team[$a][1] . ' ' . getMatePercent($conn, $team[$a]); ?></td>
+							<td><?php echo getPlayer($team[$a][0]) . ' - ' . getPlayer($team[$a][1]) . ' ' . getMatePercent($conn, $team[$a]); ?></td>
 							<td class="col-xs-2 warning">
 								<select class="form-control"  name="orangepoint[]">
 									<option value="0">0</option>
@@ -962,7 +1018,7 @@ function sendMessage($msg){
 									<option value="5">5</option>
 								</select>
 							</td>
-							<td><?php echo $team[$b][0] . ' - ' . $team[$b][1] . ' ' . getMatePercent($conn, $team[$b]); ?></td>
+							<td><?php echo getPlayer($team[$b][0]) . ' - ' . getPlayer($team[$b][1]) . ' ' . getMatePercent($conn, $team[$b]); ?></td>
 						</tr>
 					<?php endfor; ?>
 				<?php endif; ?>
@@ -1006,32 +1062,33 @@ function sendMessage($msg){
 					<tr>
 						<td>1</td>
 						<td>Congratulations!!! The player of the week.</td>
-						<td><?php echo getMostPlayer($playerWinnerWeek); ?></td>
+						<td><?php echo getAchivementPlayer(getMostPlayer($playerWinnerWeek));?>
+						</td>
 						<td><?php echo max($playerWinnerWeek); ?></td>
 					</tr>
 					<tr>
 						<td>2</td>
 						<td>The legend of legends.</td>
-						<td><?php echo getMostPlayer($playerWinner); ?></td>
+						<td><?php echo getAchivementPlayer(getMostPlayer($playerWinner)); ?></td>
 						<td><?php echo max($playerWinner); ?></td>
 					</tr>
 					<tr>
 						<td>3</td>
 						<td>The smartest player.</td>
 						<?php $smart = getSmarterPlayer($conn, $playerLostWeek) ?>
-						<td><?php echo $smart[0]; ?></td>
+						<td><?php echo getAchivementPlayer($smart[0]); ?></td>
 						<td><?php echo $smart[1]; ?></td>
 					</tr>
 					<tr>
 						<td>4</td>
 						<td>The loser of week, thanks mate.</td>
-						<td><?php echo getMostPlayer($playerLostWeek); ?></td>
+						<td><?php echo getAchivementPlayer(getMostPlayer($playerLostWeek)); ?></td>
 						<td><?php echo max($playerLostWeek); ?></td>
 					</tr>
 					<tr>
 						<td>5</td>
 						<td>The most of donation, thanks for sponsor.</td>
-						<td><?php echo getMostPlayer($playerLost); ?></td>
+						<td><?php echo getAchivementPlayer(getMostPlayer($playerLost)); ?></td>
 						<td><?php echo max($playerLost); ?></td>
 					</tr>
 					</tbody>
