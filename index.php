@@ -81,14 +81,20 @@ $scheduleType = 0;
 // Statify
 $history = array();
 $scheduleHistory = array();
+// List of player goal defference
 $playerGD = array();
+// List of rank
 $playerRank = array();
+// List of winner
 $playerWinner = array();
+// List of winner on week
 $playerWinnerWeek = array();
+// List of lost
 $playerLost = array();
+// List of lost on week
 $playerLostWeek = array();
 $players = array('Doan','Duy','Ha','Linh','Phuong','Tri','Thanh','Hiep');
-$scheduleTypes = array('Cafe','Bun','Pho','Banh canh','Hu tieu','Xoi','Mi','Bun cha ca','Ap la bo');
+$scheduleTypes = array('Cafe','Bun','Pho','Banh canh','Hu tieu','Xoi','Mi','Bun cha ca','Op la bo');
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -98,7 +104,7 @@ if ($conn->connect_error) {
 }
 
 // init load
-$team = getSchedule($conn);
+$team = getTeam($conn);
 
 // Action function
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -115,7 +121,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			if (!empty($_POST["player"]) && (count($_POST["player"]) == 4 || count($_POST["player"]) == 6))
 			{
 				$team = generateSchedule($conn,$_POST["player"]);
-				saveSchedule($conn, $team);
+				saveGenerateSchedule($conn, $team);
 				sendMessage("The schedule has been generated!");
 			}
 			else
@@ -137,7 +143,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		{
 			$orangepoint = $_POST["orangepoint"];
 			$greenpoint = $_POST["greenpoint"];
-			$team = getSchedule($conn);
+			$team = getTeam($conn);
 			$scheduleType = $_POST["schedule_type"];
 			$win = $lost = '';
 			$scheduleMatch = array(0,0,0);
@@ -182,22 +188,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			}
 			else
 			{
-				if ($orangepoint[0] > $greenpoint[0])
-				{
-					$win = $team[0][0] . ' - ' . $team[0][1];
-					$lost = $team[1][0] . ' - ' . $team[1][1];
+				array_pop($scheduleMatch);
+				for ($j=0; $j < 3; $j++) {
+					if ($orangepoint[$j] == 0 && $greenpoint[$j] == 0)
+						continue;
+					$a = 0;
+					$b = 1;
+					if ($j == 1)
+					{
+						$a = 1;
+						$b = 0;
+					}
+					if ($orangepoint[$j] > $greenpoint[$j])
+					{
+						$scheduleMatch[$a] = $scheduleMatch[$a] + 1;
+					}
+					elseif ($orangepoint[$j] < $greenpoint[$j])
+					{
+						$scheduleMatch[$b] = $scheduleMatch[$b] + 1;
+					}
+					saveMatch($conn, $team[$a], $team[$b], $orangepoint[$j], $greenpoint[$j]);
 				}
-				else
-				{
-					$win = $team[1][0] . ' - ' . $team[1][1];
-					$lost = $team[0][0] . ' - ' . $team[0][1];
-				}
+				$win = getWinTeam($team,$scheduleMatch);
+				$lost = getLostTeam($team,$scheduleMatch);
 				$saveMsg = "Congratulations! The champions is $win, thanks for donate $lost!!!";
-				saveMatch($conn, $team[0], $team[1], $orangepoint[0], $greenpoint[0]);
 			}
-			saveScheduleResult($conn, $win, $lost, $scheduleType);
-			//$team = generateSchedule($conn,$players);
-			//saveSchedule($conn, $team);
+			saveSchedule($conn, $win, $lost, $scheduleType);
+			$team = array();
 			sendMessage($saveMsg);
 			$orangepoint = array(0,0,0);
 			$greenpoint = array(0,0,0);
@@ -207,22 +224,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 foreach ($players as $key => $value) {
-	$playerGD[$value] = getLastGD($conn, $value);
+	$playerGD[$value] = getPointGD($conn, $value);
 }
 foreach ($players as $key => $value) {
-	$playerRank[$value] = getLastPoint($conn, $value);
+	$playerRank[$value] = getPointRank($conn, $value);
 }
 foreach ($players as $key => $value) {
-	$playerWinner[$value] = getLastWin($conn, $value);
+	$playerWinner[$value] = getPointWin($conn, $value);
 }
 foreach ($players as $key => $value) {
-	$playerWinnerWeek[$value] = getLastWinWeek($conn, $value);
+	$playerWinnerWeek[$value] = getPointWinWeek($conn, $value);
 }
 foreach ($players as $key => $value) {
-	$playerLost[$value] = getLastLost($conn, $value);
+	$playerLost[$value] = getPointLost($conn, $value);
 }
 foreach ($players as $key => $value) {
-	$playerLostWeek[$value] = getLastLostWeek($conn, $value);
+	$playerLostWeek[$value] = getPointLostWeek($conn, $value);
 }
 arsort($playerGD);
 arsort($playerRank);
@@ -231,11 +248,12 @@ arsort($playerWinnerWeek);
 arsort($playerLost);
 arsort($playerLostWeek);
 
-$history = getLastMatch($conn);
+$history = getMatchHistory($conn);
 $scheduleHistory =getScheduleHistory($conn);
 
-// if ($saveMsg == '') $saveMsg = "Congratulations!!! The player of the week is ".getMostPlayer($playerWinnerWeek) .".";
+if ($saveMsg == '') $saveMsg = "Congratulations!!! The player of the week is ".getMostPlayer($playerWinnerWeek) .".";
 
+// Feature function
 function checkInput($data) {
 	$data = trim($data);
 	$data = stripslashes($data);
@@ -268,125 +286,10 @@ function getLostTeam($team,$array) {
 	$key = array_search($min, $array);
 	return $team[$key][0] . ' - '. $team[$key][1];
 }
+// ---------------- //
 
-function generateSchedule($conn,$players) {
-	$team = array();
-	$playerPoint = array();
-	$playerRank = array();
-	$type = rand(1,3);
-	switch ($type) {
-		case 0:
-			foreach ($players as $key => $value) {
-				$playerPoint[$value] = $key;
-			}
-			break;
-
-		case 1:
-			foreach ($players as $key => $value) {
-				$playerPoint[$value] = getLastPoint($conn, $value);
-			}
-			break;
-
-		case 2:
-			foreach ($players as $key => $value) {
-				$playerPoint[$value] = getLastWinWeek($conn, $value);
-			}
-			break;
-
-		case 3:
-			foreach ($players as $key => $value) {
-				$playerPoint[$value] = getLastLostWeek($conn, $value);
-			}
-			break;
-	}
-
-	asort($playerPoint);
-	foreach ($playerPoint as $key => $value) {
-		$playerRank[] = $key;
-	}
-	$temp = array();
-	$i = 0;
-	$playerDivide = count($playerRank) / 2;
-	foreach ($playerRank as $key => $player) {
-		if ($key < $playerDivide)
-		{
-			$lastMateId = array_search(getLastMate($conn, $player),$playerRank);
-			$mate = -1;
-			while($mate < 0) {
-				if (count($temp) < ($playerDivide - 1))
-				{
-					if ($playerDivide == 2)
-						$mate = rand(2,3);
-					else $mate = rand(3,5);
-					if ($mate == $lastMateId || in_array($mate, $temp)) $mate = -1;
-				}
-				else
-				{
-					if ($playerDivide == 2)
-						$ar = array(2,3);
-					else $ar = array(3,4,5);
-					$result = array_diff($ar,$temp);
-					$mateArr = array_values($result);
-					$mate = $mateArr[0];
-				}
-			}
-			$temp[] = $mate;
-			$team[$i] = array($player,$playerRank[$mate]);
-			$i++;
-		}
-	}
-	return $team;
-}
-
-function getLastMatch($conn)
-{
-	$tempHistory = array();
-	$sql = "SELECT * FROM livescore ORDER BY id DESC LIMIT 30";
-	$result = $conn->query($sql);
-	if ($result->num_rows > 0) {
-		while($row = $result->fetch_assoc()) {
-			$tempHistory[] = $row;
-		}
-	} else {
-		return '';
-	}
-	return $tempHistory;
-}
-
-function getLastMate($conn, $player)
-{
-	$sql = "SELECT * FROM livescore WHERE (greena = '$player' OR greenb = '$player' OR orangea = '$player' OR orangeb = '$player') ORDER BY id DESC LIMIT 1";
-	$result = $conn->query($sql);
-	if ($result->num_rows > 0) {
-		while($row = $result->fetch_assoc()) {
-			if ($row["greena"] == $player) return $row["greenb"];
-			if ($row["greenb"] == $player) return $row["greena"];
-			if ($row["orangea"] == $player) return $row["orangeb"];
-			if ($row["orangeb"] == $player) return $row["orangea"];
-		}
-	} else {
-		return '';
-	}
-}
-
-function getMatePercent($conn, $team)
-{
-	$teama = $team[0] . ' - ' . $team[1];
-	$teamb = $team[1] . ' - ' . $team[0];
-	$sql = "SELECT * FROM schedule WHERE (win = '$teama' OR win = '$teamb') ORDER BY id DESC LIMIT 10";
-	$result = $conn->query($sql);
-	$win = $result->num_rows;
-	$sql = "SELECT * FROM schedule WHERE (lost = '$teama' OR lost = '$teamb') ORDER BY id DESC LIMIT 10";
-	$result = $conn->query($sql);
-	$lost = $result->num_rows;
-	$total = $win + $lost;
-	if ($total == 0 )
-		return "(NA)";
-	$percent =round($win / $total * 100,2);
-	return "($percent%)";
-}
-
-function getLastGD($conn, $player)
+// Statify function
+function getPointGD($conn, $player)
 {
 	$sql = "SELECT * FROM livescore WHERE (greena = '$player' OR greenb = '$player' OR orangea = '$player' OR orangeb = '$player') ORDER BY id DESC";
 	$result = $conn->query($sql);
@@ -406,9 +309,10 @@ function getLastGD($conn, $player)
 	return $point;
 }
 
-function getLastPoint($conn, $player)
+function getPointRank($conn, $player)
 {
-	$sql = "SELECT * FROM schedule WHERE schedule_data LIKE '%$player%' AND win is not null AND lost is not null ORDER BY id DESC";
+	$para = '"' . $player . '"';
+	$sql = "SELECT * FROM schedule WHERE schedule_data LIKE '%$para%' AND win is not null AND lost is not null ORDER BY id DESC";
 	$result = $conn->query($sql);
 	$form = '';
 	if ($result->num_rows > 0) {
@@ -433,35 +337,39 @@ function getLastPoint($conn, $player)
 	return $point;
 }
 
-function getLastWin($conn, $player)
+function getPointWin($conn, $player)
 {
-	$sql = "SELECT * FROM schedule WHERE (win LIKE '%$player%') ORDER BY id DESC";
+	$para = '"' . $player . '"';
+	$sql = "SELECT * FROM schedule WHERE (schedule_data LIKE '%$para%' AND win LIKE '%$player%') ORDER BY id DESC";
 	$result = $conn->query($sql);
 	return $result->num_rows;
 }
 
-function getLastLost($conn, $player)
+function getPointLost($conn, $player)
 {
-	$sql = "SELECT * FROM schedule WHERE (lost LIKE '%$player%') ORDER BY id DESC";
+	$para = '"' . $player . '"';
+	$sql = "SELECT * FROM schedule WHERE (schedule_data LIKE '%$para%' AND lost LIKE '%$player%') ORDER BY id DESC";
 	$result = $conn->query($sql);
 	return $result->num_rows;
 }
 
-function getLastWinWeek($conn, $player)
+function getPointWinWeek($conn, $player)
 {
-	$sql = "SELECT * FROM schedule WHERE (win LIKE '%$player%'  AND YEARWEEK(datetime) = YEARWEEK(NOW())) ORDER BY id DESC ";
+	$para = '"' . $player . '"';
+	$sql = "SELECT * FROM schedule WHERE (schedule_data LIKE '%$para%' AND win LIKE '%$player%'  AND YEARWEEK(datetime) = YEARWEEK(NOW())) ORDER BY id DESC ";
 	$result = $conn->query($sql);
 	return $result->num_rows;
 }
 
-function getLastLostWeek($conn, $player)
+function getPointLostWeek($conn, $player)
 {
-	$sql = "SELECT * FROM schedule WHERE (lost LIKE '%$player%' AND YEARWEEK(datetime) = YEARWEEK(NOW())) ORDER BY id DESC";
+	$para = '"' . $player . '"';
+	$sql = "SELECT * FROM schedule WHERE (schedule_data LIKE '%$para%' AND lost LIKE '%$player%' AND YEARWEEK(datetime) = YEARWEEK(NOW())) ORDER BY id DESC";
 	$result = $conn->query($sql);
 	return $result->num_rows;
 }
 
-function getLastTenResult($conn, $player)
+function getFormTenMatch($conn, $player)
 {
 	$sql = "SELECT * FROM livescore WHERE (greena = '$player' OR greenb = '$player' OR orangea = '$player' OR orangeb = '$player') ORDER BY id DESC LIMIT 10";
 	$result = $conn->query($sql);
@@ -517,7 +425,7 @@ function getLastTenResult($conn, $player)
 	return array($win,$lost,$form);
 }
 
-function getLastResult($conn, $player)
+function getPointMatch($conn, $player)
 {
 	$sql = "SELECT * FROM livescore WHERE (greena = '$player' OR greenb = '$player' OR orangea = '$player' OR orangeb = '$player') ORDER BY id DESC";
 	$result = $conn->query($sql);
@@ -552,9 +460,10 @@ function getLastResult($conn, $player)
 	return array($win,$lost,$result->num_rows);
 }
 
-function getLastTenSchedule($conn, $player)
+function getFormTenSchedule($conn, $player)
 {
-	$sql = "SELECT * FROM schedule WHERE schedule_data LIKE '%$player%' AND win is not null AND lost is not null ORDER BY id DESC LIMIT 10";
+	$para = '"' . $player . '"';
+	$sql = "SELECT * FROM schedule WHERE schedule_data LIKE '%$para%' AND win is not null AND lost is not null ORDER BY id DESC LIMIT 10";
 	$result = $conn->query($sql);
 	$form = "";
 	if ($result->num_rows > 0) {
@@ -597,15 +506,152 @@ function getLastTenSchedule($conn, $player)
 	// return array(round($win,2) . '%',$lost . '%',$form);
 	return array($point,$form);
 }
+// ---------------- //
 
-function getSchedule($conn)
+// History function
+function getMatchHistory($conn)
 {
-	$sql = "SELECT * FROM schedule WHERE win IS NULL OR lost IS NULL ORDER BY id DESC LIMIT 1";
+	$tempHistory = array();
+	$sql = "SELECT * FROM livescore ORDER BY id DESC LIMIT 30";
+	$result = $conn->query($sql);
+	if ($result->num_rows > 0) {
+		while($row = $result->fetch_assoc()) {
+			$tempHistory[] = $row;
+		}
+	} else {
+		return '';
+	}
+	return $tempHistory;
+}
+
+function getScheduleHistory($conn)
+{
+	$sql = "SELECT * FROM schedule WHERE win is not null AND lost is not null  ORDER BY id DESC LIMIT 10";
+	$result = $conn->query($sql);
+	$tempHistory = array();
+	if ($result->num_rows > 0) {
+		while($row = $result->fetch_assoc()) {
+			$tempHistory[] = $row;
+		}
+	} else {
+		return '';
+	}
+	return $tempHistory;
+}
+// ---------------- //
+
+// Generate Schedule function
+function generateSchedule($conn,$players) {
+	$team = array();
+	$playerPoint = array();
+	$playerRank = array();
+	$type = rand(1,3);
+	switch ($type) {
+		case 0:
+			foreach ($players as $key => $value) {
+				$playerPoint[$value] = $key;
+			}
+			break;
+
+		case 1:
+			foreach ($players as $key => $value) {
+				$playerPoint[$value] = getPointRank($conn, $value);
+			}
+			break;
+
+		case 2:
+			foreach ($players as $key => $value) {
+				$playerPoint[$value] = getPointWinWeek($conn, $value);
+			}
+			break;
+
+		case 3:
+			foreach ($players as $key => $value) {
+				$playerPoint[$value] = getPointLostWeek($conn, $value);
+			}
+			break;
+	}
+
+	asort($playerPoint);
+	foreach ($playerPoint as $key => $value) {
+		$playerRank[] = $key;
+	}
+	$temp = array();
+	$i = 0;
+	$playerDivide = count($playerRank) / 2;
+	foreach ($playerRank as $key => $player) {
+		if ($key < $playerDivide)
+		{
+			$lastMateId = array_search(getLastMate($conn, $player),$playerRank);
+			$mate = -1;
+			while($mate < 0) {
+				if (count($temp) < ($playerDivide - 1))
+				{
+					if ($playerDivide == 2)
+						$mate = rand(2,3);
+					else $mate = rand(3,5);
+					if ($mate == $lastMateId || in_array($mate, $temp)) $mate = -1;
+				}
+				else
+				{
+					if ($playerDivide == 2)
+						$ar = array(2,3);
+					else $ar = array(3,4,5);
+					$result = array_diff($ar,$temp);
+					$mateArr = array_values($result);
+					$mate = $mateArr[0];
+				}
+			}
+			$temp[] = $mate;
+			$team[$i] = array($player,$playerRank[$mate]);
+			$i++;
+		}
+	}
+	return $team;
+}
+
+function getLastMate($conn, $player)
+{
+	$sql = "SELECT * FROM livescore WHERE (greena = '$player' OR greenb = '$player' OR orangea = '$player' OR orangeb = '$player') ORDER BY id DESC LIMIT 1";
+	$result = $conn->query($sql);
+	if ($result->num_rows > 0) {
+		while($row = $result->fetch_assoc()) {
+			if ($row["greena"] == $player) return $row["greenb"];
+			if ($row["greenb"] == $player) return $row["greena"];
+			if ($row["orangea"] == $player) return $row["orangeb"];
+			if ($row["orangeb"] == $player) return $row["orangea"];
+		}
+	} else {
+		return '';
+	}
+}
+
+function getMatePercent($conn, $team)
+{
+	$teama = $team[0] . ' - ' . $team[1];
+	$teamb = $team[1] . ' - ' . $team[0];
+	$sql = "SELECT * FROM schedule WHERE (win = '$teama' OR win = '$teamb') ORDER BY id DESC LIMIT 10";
+	$result = $conn->query($sql);
+	$win = $result->num_rows;
+	$sql = "SELECT * FROM schedule WHERE (lost = '$teama' OR lost = '$teamb') ORDER BY id DESC LIMIT 10";
+	$result = $conn->query($sql);
+	$lost = $result->num_rows;
+	$total = $win + $lost;
+	if ($total == 0 )
+		return "(NA)";
+	$percent =round($win / $total * 100,2);
+	return "($percent%)";
+}
+
+function getTeam($conn)
+{
+	$sql = "SELECT * FROM schedule ORDER BY id DESC LIMIT 1";
 	$result = $conn->query($sql);
 	$team = array();
 	if ($result->num_rows > 0) {
 		while($row = $result->fetch_assoc()) {
-			$team = unserialize($row['schedule_data']);
+			if ($row['win'] == '' && $row['lost'] == '')
+				$team = unserialize($row['schedule_data']);
 		}
 	}
 	return $team;
@@ -624,21 +670,6 @@ function getLastSchedule($conn)
 	return $schedule;
 }
 
-function getScheduleHistory($conn)
-{
-	$sql = "SELECT * FROM schedule WHERE win is not null AND lost is not null  ORDER BY id DESC LIMIT 10";
-	$result = $conn->query($sql);
-	$tempHistory = array();
-	if ($result->num_rows > 0) {
-		while($row = $result->fetch_assoc()) {
-			$tempHistory[] = $row;
-		}
-	} else {
-		return '';
-	}
-	return $tempHistory;
-}
-
 function checkSchedule($conn)
 {
 	$sql = "SELECT * FROM schedule WHERE (datetime > (now() - interval 60 minute)) ORDER BY id DESC LIMIT 1";
@@ -650,6 +681,15 @@ function checkSchedule($conn)
 	return false;
 }
 
+function saveGenerateSchedule($conn, $team)
+{
+	$data = serialize($team);
+	$sql = "INSERT INTO schedule (schedule_data, datetime) VALUES ('$data', now())";
+	$conn->query($sql);
+}
+// ---------------- //
+
+// Save Resullt function
 function saveMatch($conn, $orange, $green, $orangepoint, $greenpoint)
 {
 	$sql = "SELECT * FROM schedule ORDER BY id DESC LIMIT 1";
@@ -664,7 +704,7 @@ function saveMatch($conn, $orange, $green, $orangepoint, $greenpoint)
 	$conn->query($sql);
 }
 
-function saveScheduleResult($conn, $win, $lost, $scheduleType)
+function saveSchedule($conn, $win, $lost, $scheduleType)
 {
 	$sql = "SELECT * FROM schedule ORDER BY id DESC LIMIT 1";
 	$result = $conn->query($sql);
@@ -675,13 +715,6 @@ function saveScheduleResult($conn, $win, $lost, $scheduleType)
 		}
 	}
 	$sql = "UPDATE schedule SET win='$win', lost='$lost', schedule_type=$scheduleType, datetime=now()  WHERE id=$id";
-	$conn->query($sql);
-}
-
-function saveSchedule($conn, $team)
-{
-	$data = serialize($team);
-	$sql = "INSERT INTO schedule (schedule_data, datetime) VALUES ('$data', now())";
 	$conn->query($sql);
 }
 
@@ -711,13 +744,17 @@ function sendMessage($msg){
 	$response = curl_exec($ch);
 	curl_close($ch);
 }
+// ---------------- //
 ?>
+
+<!-- The ranking block -->
 <div class="container">
 	<a href="/"><img src="/ratong-logo.jpg" width="200px" style="padding:5px 0 5px; border:0px;"></a>
 	<div class="panel-group">
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<h2>Lotus Ratong table</h2>
+				<h4><span class="label label-success"><?php echo $saveMsg;?></span></h4>
 			</div>
 			<div class="panel-body">
 				<span>Win = 3 points, Drawn = 1 point, Lost = 0 point</span><br><br>
@@ -735,7 +772,7 @@ function sendMessage($msg){
 					</thead>
 					<tbody>
 					<?php $p=1;foreach ($playerRank as $key => $value): ?>
-						<?php $res = getLastTenSchedule($conn, $key); ?>
+						<?php $res = getFormTenSchedule($conn, $key); ?>
 						<tr>
 							<td><?php echo $p; ?></td>
 							<td><?php echo $key; ?></td>
@@ -771,10 +808,10 @@ function sendMessage($msg){
 						</thead>
 						<tbody>
 						<?php $p=1;foreach ($playerGD as $key => $value): ?>
-							<?php $res = getLastResult($conn, $key); ?>
-							<?php $resTen = getLastTenResult($conn, $key); ?>
+							<?php $res = getPointMatch($conn, $key); ?>
+							<?php $resTen = getFormTenMatch($conn, $key); ?>
 							<tr>
-								<td><input type="checkbox" name="player[]" value="<?php echo $key ?>" <?php if ($key != 'Ha' && $key != 'Hiep') echo 'checked'; ?>/></td>
+								<td><input type="checkbox" name="player[]" value="<?php echo $key ?>" <?php if ($key != 'Hiep') echo 'checked'; ?>/></td>
 								<td><?php echo $p; ?></td>
 								<td><?php echo $key; ?></td>
 								<td><?php echo $res[0]; ?></td>
@@ -799,10 +836,10 @@ function sendMessage($msg){
 	</div>
 </div>
 
+<!-- The generate schedule block -->
 <?php if(count($team) >= 2): ?>
 	<div class="container">
 		<h2>Schedule</h2>
-		<h4><span class="label label-success"><?php echo $saveMsg;?></span></h4>
 		<form class="form-horizontal panel panel-default form-inline" method="post">
 			<table class="table table-responsive table-bordered table-striped text-center">
 				<thead>
@@ -843,30 +880,33 @@ function sendMessage($msg){
 						</tr>
 					<?php endfor; ?>
 				<?php else: ?>
-					<tr>
-						<td><?php echo $team[0][0] . ' - ' . $team[0][1] . ' ' . getMatePercent($conn, $team[0]); ?></td>
-						<td class="col-xs-2 warning">
-							<select class="form-control"  name="orangepoint[]">
-								<option value="0">0</option>
-								<option value="1">1</option>
-								<option value="2">2</option>
-								<option value="3">3</option>
-								<option value="4">4</option>
-								<option value="5">5</option>
-							</select>
-						</td>
-						<td class="col-xs-2 success">
-							<select class="form-control"  name="greenpoint[]">
-								<option value="0">0</option>
-								<option value="1">1</option>
-								<option value="2">2</option>
-								<option value="3">3</option>
-								<option value="4">4</option>
-								<option value="5">5</option>
-							</select>
-						</td>
-						<td><?php echo $team[1][0] . ' - ' . $team[1][1] . ' ' . getMatePercent($conn, $team[1]); ?></td>
-					</tr>
+					<?php for ($j=0; $j < 3; $j++): ?>
+						<?php $a = 0; $b = 1; if ($j == 1) {$b = 0; $a = 1;} ?>
+						<tr>
+							<td><?php echo $team[$a][0] . ' - ' . $team[$a][1] . ' ' . getMatePercent($conn, $team[$a]); ?></td>
+							<td class="col-xs-2 warning">
+								<select class="form-control"  name="orangepoint[]">
+									<option value="0">0</option>
+									<option value="1">1</option>
+									<option value="2">2</option>
+									<option value="3">3</option>
+									<option value="4">4</option>
+									<option value="5">5</option>
+								</select>
+							</td>
+							<td class="col-xs-2 success">
+								<select class="form-control"  name="greenpoint[]">
+									<option value="0">0</option>
+									<option value="1">1</option>
+									<option value="2">2</option>
+									<option value="3">3</option>
+									<option value="4">4</option>
+									<option value="5">5</option>
+								</select>
+							</td>
+							<td><?php echo $team[$b][0] . ' - ' . $team[$b][1] . ' ' . getMatePercent($conn, $team[$b]); ?></td>
+						</tr>
+					<?php endfor; ?>
 				<?php endif; ?>
 				<tr>
 					<td colspan="4">
@@ -889,6 +929,7 @@ function sendMessage($msg){
 	</div>
 <?php endif; ?>
 
+<!-- The achivement block -->
 <div class="container">
 	<div class="panel-group">
 		<div class="panel panel-default">
@@ -919,8 +960,8 @@ function sendMessage($msg){
 					<tr>
 						<td>3</td>
 						<td>The smartest player.</td>
-						<td><?php echo array_search(min($playerLostWeek), $playerLostWeek); ?></td>
-						<td><?php echo min($playerLostWeek); ?></td>
+						<td><?php echo array_search(min(array_diff($playerLostWeek, array(0))), $playerLostWeek); ?></td>
+						<td><?php echo min(array_diff($playerLostWeek, array(0))); ?></td>
 					</tr>
 					<tr>
 						<td>4</td>
@@ -941,6 +982,7 @@ function sendMessage($msg){
 	</div>
 </div>
 
+<!-- The history block -->
 <div class="container">
 	<h2>History</h2>
 	<?php $lastSchedule = getLastSchedule($conn); ?>
