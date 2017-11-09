@@ -5,6 +5,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async='async'></script>
@@ -23,7 +24,11 @@
 		input {
 			height: 33px;
 		}
-		.label-success{
+
+		.summary tr td, .ranking tr td {
+			vertical-align: middle!important;
+		}
+		.label-success {
 			color: #fff!important;
 			background-color: #d41e8e!important;
 			min-width: 25px;
@@ -44,19 +49,93 @@
 		}
 
 		.generate {
-			margin:auto;
+			margin: auto;
 			width: 200px;
 		}
 
 		.toolbox {
 			width: 400px;
-			margin:auto;
+			margin: auto;
 		}
-		@media screen and (max-width: 767px){
-			.table {zoom:0.7;}
-			.label-success {font-size:12px;}
-			.col-sm-3 {margin:10px;}
-			.schedule-btn {margin-top:10px;}
+
+		.result {
+			vertical-align: middle!important;
+		}
+		.player span{
+			background-repeat: no-repeat;
+			background-size: 23%;
+			min-height: 65px;
+			height: 65px;
+			display: block;
+			line-height: 65px;
+			padding-left: 25px;
+		}
+
+		.schedule .player span {
+			background-size: 17%;
+		}
+
+		.fa{
+			color: #d41e8e;
+			cursor: pointer;
+		}
+
+		.label-success .fa {
+			color: #fff;
+		}
+		.player #Duy{
+			background-image: url(images/duy.jpeg);
+		}
+
+		.player #Ha{
+			background-image: url(images/ha.jpg);
+		}
+
+		.player #Thanh{
+			background-image: url(images/thanh.jpg);
+		}
+
+		.player #Tri{
+			background-image: url(images/tri.jpg);
+		}
+
+		.player #Doan{
+			background-image: url(images/doan.jpg);
+		}
+
+		.player #Linh{
+			background-image: url(images/linh.jpg);
+		}
+
+		.player #Phuong{
+			background-image: url(images/phuong.jpg);
+		}
+
+		.player #Hiep{
+			background-image: url(images/hiep.jpg);
+		}
+		@media screen and (max-width: 767px) {
+			.table {
+				zoom: 0.7;
+			}
+
+			.label-success {
+				font-size: 12px;
+			}
+
+			.col-sm-3 {
+				margin: 10px;
+			}
+
+			.schedule-btn {
+				margin-top: 10px;
+			}
+			.summary tr td, .ranking tr td {
+				vertical-align: middle!important;
+			}
+			.player span {
+				line-height: 18px;
+			}
 		}
 	</style>
 </head>
@@ -100,7 +179,7 @@ $playerLostWeek = array();
 $playerPointTenMatch = array();
 $players = array('Doan','Duy','Ha','Linh','Phuong','Tri','Thanh','Hiep');
 $scheduleTypes = array('Cafe','Bun','Pho','Banh canh','Hu tieu','Xoi','Mi','Bun cha ca','Op la bo','Banh cuon');
-$nickNameList = array('Doan' => 'Doan Diêm Dúa','Duy' => 'Duy Dặt Dẹo','Ha' => 'Hà Hùng Hồn','Linh' => 'Linh Lạc Loài','Phuong' => 'Phương Phúng Phính','Tri' => 'Trí Trốn Tránh','Thanh' => 'Thạnh Thướt Tha','Hiep' => 'Hiep');
+$nickNameList = array('Doan' => 'Doan Diêm Dúa','Duy' => 'Duy Dặt Dẹo','Ha' => 'Hà Hàm Hồ','Linh' => 'Linh Lạc Loài','Phuong' => 'Phương Phúng Phính','Tri' => 'Trí Trốn Tránh','Thanh' => 'Thạnh Thướt Tha','Hiep' => 'Hiệp Hư Hỏng');
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
 // Check connection
@@ -314,16 +393,16 @@ function getPlayer($key) {
 	$nickName = $nickNameList[$key];
 	$achive = '';
 	if (in_array($key, getMostPlayer($playerWinnerWeek)))
-		$achive = 'a1';
+		$achive = $achive . " <i class='fa fa-star' data-toggle='tooltip' title='The best player of the week' aria-hidden='true'></i>";
 	if (in_array($key, getMostPlayer($playerWinner)))
-		$achive = 'a2';
+		$achive = $achive . " <i class='fa fa-diamond' data-toggle='tooltip' title='The legend of legends' aria-hidden='true'></i>";
 	if (in_array($key, $playerSmarter))
-		$achive = 'a3';
+		$achive = $achive . " <i class='fa fa-btc' data-toggle='tooltip' title='The smartest player of the week' aria-hidden='true'></i>";
 	if (in_array($key, getMostPlayer($playerLostWeek)))
-		$achive = 'a4';
+		$achive = $achive . " <i class='fa fa-battery-empty' data-toggle='tooltip' title='The loser of the week' aria-hidden='true'></i>";
 	if (in_array($key, getMostPlayer($playerLost)))
-		$achive = 'a5';
-	$html = "<span id='$key' class='$achive'>$nickName</span>";
+		$achive = $achive . " <i class='fa fa-heartbeat' data-toggle='tooltip' title='The worst player ever' aria-hidden='true'></i>";
+	$html = "<span id='$key' class=''>$nickName $achive</span>";
 	return $html;
 }
 
@@ -753,7 +832,7 @@ function getMatePercent($conn, $team)
 	$total = $win + $lost;
 	if ($total == 0 )
 		return "(NA)";
-	$percent =round($win / $total * 100,2);
+	$percent =round($win / $total * 100);
 	return "($percent%)";
 }
 
@@ -872,7 +951,7 @@ function sendMessage($msg){
 			</div>
 			<div class="panel-body">
 				<span>Win = 3 points, Drawn = 1 point, Lost = 0 point</span><br><br>
-				<table class="table table-responsive table-bordered table-striped text-center">
+				<table class="table table-responsive table-bordered table-striped text-center ranking">
 					<thead>
 					<tr>
 						<th class="text-center">Rank</th>
@@ -889,7 +968,7 @@ function sendMessage($msg){
 						<?php $res = getFormTenSchedule($conn, $key); ?>
 						<tr>
 							<td><?php echo $p; ?></td>
-							<td><?php echo getPlayer($key); ?></td>
+							<td class="player"><?php echo getPlayer($key); ?></td>
 							<td><?php echo $playerWinner[$key]; ?></td>
 							<td><?php echo $value - $playerWinner[$key] * 3; ?></td>
 							<td><?php echo $playerLost[$key]; ?></td>
@@ -908,7 +987,7 @@ function sendMessage($msg){
 			<div class="panel-body">
 				<form method="post" class="form-inline">
 					<span>Which player do you want access to?</span><span class="label label-danger"><?php echo $playerErr;?></span><br><br>
-					<table class="table table-responsive table-bordered table-striped text-center">
+					<table class="table table-responsive table-bordered table-striped text-center summary">
 						<thead>
 						<tr>
 							<th class="text-center">#</th>
@@ -927,7 +1006,7 @@ function sendMessage($msg){
 							<tr>
 								<td><input type="checkbox" name="player[]" value="<?php echo $key ?>" <?php if ($key != 'Hiep') echo 'checked'; ?>/></td>
 								<td><?php echo $p; ?></td>
-								<td><?php echo getPlayer($key); ?></td>
+								<td class="player"><?php echo getPlayer($key); ?></td>
 								<td><?php echo $res[0]; ?></td>
 								<td><?php echo $res[1]; ?></td>
 								<td><?php echo $playerGD[$key]; ?></td>
@@ -955,7 +1034,7 @@ function sendMessage($msg){
 	<div class="container">
 		<h2>Schedule</h2>
 		<form class="form-horizontal panel panel-default form-inline" method="post">
-			<table class="table table-responsive table-bordered table-striped text-center">
+			<table class="table table-responsive table-bordered table-striped text-center schedule">
 				<thead>
 				<tr>
 					<th class="text-center">ORANGE TEAM</th>
@@ -969,8 +1048,8 @@ function sendMessage($msg){
 					<?php for ($j=0; $j < 3; $j++): ?>
 						<?php $a = $j; if ($j == 2) $b = 0; else $b = $a + 1; ?>
 						<tr>
-							<td><?php echo getPlayer($team[$a][0]) . ' - ' . getPlayer($team[$a][1]) . ' ' . getMatePercent($conn, $team[$a]); ?></td>
-							<td class="col-xs-2 warning">
+							<td class="player"><?php echo getPlayer($team[$a][0]) .  getPlayer($team[$a][1]) ?></td>
+							<td class="col-xs-2 warning result">
 								<select class="form-control"  name="orangepoint[]">
 									<option value="0">0</option>
 									<option value="1">1</option>
@@ -978,9 +1057,10 @@ function sendMessage($msg){
 									<option value="3">3</option>
 									<option value="4">4</option>
 									<option value="5">5</option>
-								</select>
+								</select><br />
+								<?php echo getMatePercent($conn, $team[$a]); ?>
 							</td>
-							<td class="col-xs-2 success">
+							<td class="col-xs-2 success result">
 								<select class="form-control"  name="greenpoint[]">
 									<option value="0">0</option>
 									<option value="1">1</option>
@@ -988,17 +1068,18 @@ function sendMessage($msg){
 									<option value="3">3</option>
 									<option value="4">4</option>
 									<option value="5">5</option>
-								</select>
+								</select><br />
+								<?php echo getMatePercent($conn, $team[$b]); ?>
 							</td>
-							<td><?php echo getPlayer($team[$b][0]) . ' - ' . getPlayer($team[$b][1]) . ' ' . getMatePercent($conn, $team[$b]); ?></td>
+							<td class="player"><?php echo getPlayer($team[$b][0]) . getPlayer($team[$b][1]); ?></td>
 						</tr>
 					<?php endfor; ?>
 				<?php else: ?>
 					<?php for ($j=0; $j < 3; $j++): ?>
 						<?php $a = 0; $b = 1; if ($j == 1) {$b = 0; $a = 1;} ?>
 						<tr>
-							<td><?php echo getPlayer($team[$a][0]) . ' - ' . getPlayer($team[$a][1]) . ' ' . getMatePercent($conn, $team[$a]); ?></td>
-							<td class="col-xs-2 warning">
+							<td class="player"><?php echo getPlayer($team[$a][0]) . getPlayer($team[$a][1]); ?></td>
+							<td class="col-xs-2 warning result">
 								<select class="form-control"  name="orangepoint[]">
 									<option value="0">0</option>
 									<option value="1">1</option>
@@ -1006,9 +1087,10 @@ function sendMessage($msg){
 									<option value="3">3</option>
 									<option value="4">4</option>
 									<option value="5">5</option>
-								</select>
+								</select><br />
+								<?php echo getMatePercent($conn, $team[$a]); ?>
 							</td>
-							<td class="col-xs-2 success">
+							<td class="col-xs-2 success result">
 								<select class="form-control"  name="greenpoint[]">
 									<option value="0">0</option>
 									<option value="1">1</option>
@@ -1016,9 +1098,10 @@ function sendMessage($msg){
 									<option value="3">3</option>
 									<option value="4">4</option>
 									<option value="5">5</option>
-								</select>
+								</select><br />
+								<?php echo getMatePercent($conn, $team[$b]); ?>
 							</td>
-							<td><?php echo getPlayer($team[$b][0]) . ' - ' . getPlayer($team[$b][1]) . ' ' . getMatePercent($conn, $team[$b]); ?></td>
+							<td class="player"><?php echo getPlayer($team[$b][0]) . getPlayer($team[$b][1]); ?></td>
 						</tr>
 					<?php endfor; ?>
 				<?php endif; ?>
@@ -1044,7 +1127,7 @@ function sendMessage($msg){
 <?php endif; ?>
 
 <!-- The achivement block -->
-<div class="container">
+<div class="container achivement">
 	<div class="panel-group">
 		<div class="panel panel-default">
 			<div class="panel-heading"><h2>Achivement</h2></div>
@@ -1055,41 +1138,42 @@ function sendMessage($msg){
 						<th class="text-center">#</th>
 						<th class="text-center">Achivement</th>
 						<th class="text-center">Player</th>
-						<th class="text-center">Point</th>
+						<th class="text-center"></th>
 					</tr>
 					</thead>
 					<tbody>
 					<tr>
 						<td>1</td>
-						<td>Congratulations!!! The player of the week.</td>
-						<td><?php echo getAchivementPlayer(getMostPlayer($playerWinnerWeek));?>
-						</td>
-						<td><?php echo max($playerWinnerWeek); ?></td>
+						<td>The legend of legends.</td>
+						<td><?php echo getAchivementPlayer(getMostPlayer($playerWinner)); ?></td>
+						<td><?php echo max($playerWinner); ?> wins/total</td>
 					</tr>
 					<tr>
 						<td>2</td>
-						<td>The legend of legends.</td>
-						<td><?php echo getAchivementPlayer(getMostPlayer($playerWinner)); ?></td>
-						<td><?php echo max($playerWinner); ?></td>
+						<td>The player of the week.</td>
+						<td><?php echo getAchivementPlayer(getMostPlayer($playerWinnerWeek));?>
+						</td>
+						<td><?php echo max($playerWinnerWeek); ?> wins/this week</td>
 					</tr>
+
 					<tr>
 						<td>3</td>
 						<td>The smartest player.</td>
 						<?php $smart = getSmarterPlayer($conn, $playerLostWeek) ?>
-						<td><?php echo getAchivementPlayer($smart[0]); ?></td>
+						<td><?php echo getAchivementPlayer($smart[0]); ?> </td>
 						<td><?php echo $smart[1]; ?></td>
 					</tr>
 					<tr>
 						<td>4</td>
 						<td>The loser of week, thanks mate.</td>
 						<td><?php echo getAchivementPlayer(getMostPlayer($playerLostWeek)); ?></td>
-						<td><?php echo max($playerLostWeek); ?></td>
+						<td><?php echo max($playerLostWeek); ?> defeats/this week</td>
 					</tr>
 					<tr>
 						<td>5</td>
 						<td>The most of donation, thanks for sponsor.</td>
 						<td><?php echo getAchivementPlayer(getMostPlayer($playerLost)); ?></td>
-						<td><?php echo max($playerLost); ?></td>
+						<td><?php echo max($playerLost); ?> defeats/total</td>
 					</tr>
 					</tbody>
 				</table>
@@ -1157,4 +1241,9 @@ function sendMessage($msg){
 $conn->close();
 ?>
 </body>
+<script>
+	$(document).ready(function(){
+		$('[data-toggle="tooltip"]').tooltip();
+	});
+</script>
 </html>
