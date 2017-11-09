@@ -118,15 +118,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		}
 		else
 		{
-			if (!empty($_POST["player"]) && (count($_POST["player"]) == 4 || count($_POST["player"]) == 6))
+			if (!empty($_POST["player"]) && (count($_POST["player"]) > 3))
 			{
-				$team = generateSchedule($conn,$_POST["player"]);
+				$playerTeam = $_POST["player"];
+				if (count($playerTeam) == 7 || count($playerTeam) == 5)
+				{
+					$remove = rand(0,(count($playerTeam) -1 ));
+					unset($playerTeam[$remove]);
+				}
+				$team = generateSchedule($conn,$playerTeam);
 				saveGenerateSchedule($conn, $team);
 				sendMessage("The schedule has been generated!");
 			}
 			else
 			{
-				$playerErr =  "You need to select 4 or 6 players!";
+				$playerErr =  "You need to input more than 3 players!";
 			}
 		}
 	}
@@ -367,6 +373,23 @@ function getPointLostWeek($conn, $player)
 	$sql = "SELECT * FROM schedule WHERE (schedule_data LIKE '%$para%' AND lost LIKE '%$player%' AND YEARWEEK(datetime) = YEARWEEK(NOW())) ORDER BY id DESC";
 	$result = $conn->query($sql);
 	return $result->num_rows;
+}
+
+function getSmarterPlayer($conn, $playerLostWeek)
+{
+	$min = max($playerLostWeek);
+	$player = '';
+	foreach ($playerLostWeek as $key => $value) {
+		$para = '"' . $key . '"';
+		$sql = "SELECT * FROM schedule WHERE (schedule_data LIKE '%$para%' AND YEARWEEK(datetime) = YEARWEEK(NOW())) ORDER BY id DESC";
+		$result = $conn->query($sql);
+		if ($min > $value && $result->num_rows > 0)
+		{
+			$min = $value;
+			$player = $key;
+		}
+	}
+	return array($player,$min);
 }
 
 function getFormTenMatch($conn, $player)
@@ -960,8 +983,9 @@ function sendMessage($msg){
 					<tr>
 						<td>3</td>
 						<td>The smartest player.</td>
-						<td><?php echo array_search(min(array_diff($playerLostWeek, array(0))), $playerLostWeek); ?></td>
-						<td><?php echo min(array_diff($playerLostWeek, array(0))); ?></td>
+						<?php $smart = getSmarterPlayer($conn, $playerLostWeek) ?>
+						<td><?php echo $smart[0]; ?></td>
+						<td><?php echo $smart[1]; ?></td>
 					</tr>
 					<tr>
 						<td>4</td>
