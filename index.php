@@ -87,7 +87,7 @@ $playerWinner = array();
 $playerWinnerWeek = array();
 $playerLost = array();
 $playerLostWeek = array();
-$players = array('Doan','Duy','Ha','Linh','Phuong','Tri');
+$players = array('Doan','Duy','Ha','Linh','Phuong','Tri','Thanh','Hiep');
 $scheduleTypes = array('Cafe','Bun','Pho','Banh canh','Hu tieu','Xoi','Mi','Bun cha ca','Ap la bo');
 
 // Create connection
@@ -163,21 +163,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 				if (count(array_unique($scheduleMatch)) === 1 && count(array_unique($scheduleMatchPoint)) === 1)
 				{
 					// case 1: all draw
-					$saveMsg = "We couldn't find the champions, the schedule has been generated again, plz go go go!!!";
+					$saveMsg = "We couldn't find the champions, plz go go go!!!";
 				}
 				elseif (count(array_unique($scheduleMatch)) === 1)
 				{
 					// case 2: all draw but the point is not same
 					$win = getWinTeam($team,$scheduleMatchPoint);
 					$lost = getLostTeam($team,$scheduleMatchPoint);
-					$saveMsg = "The champions is $win, thanks for donation $lost, the schedule has been generated again!!!";
+					$saveMsg = "The champions is $win, thanks for donation $lost!!!";
 				}
 				else
 				{
 					// case 3: normal case
 					$win = getWinTeam($team,$scheduleMatch);
 					$lost = getLostTeam($team,$scheduleMatch);
-					$saveMsg = "Congratulations! The champions is $win, thanks for donate $lost, the schedule has been generated again!!!";
+					$saveMsg = "Congratulations! The champions is $win, thanks for donate $lost!!!";
 				}
 			}
 			else
@@ -192,12 +192,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 					$win = $team[1][0] . ' - ' . $team[1][1];
 					$lost = $team[0][0] . ' - ' . $team[0][1];
 				}
-				$saveMsg = "Congratulations! The champions is $win, thanks for donate $lost, the schedule has been generated again!!!";
+				$saveMsg = "Congratulations! The champions is $win, thanks for donate $lost!!!";
 				saveMatch($conn, $team[0], $team[1], $orangepoint[0], $greenpoint[0]);
 			}
 			saveScheduleResult($conn, $win, $lost, $scheduleType);
-			$team = generateSchedule($conn,$players);
-			saveSchedule($conn, $team);
+			//$team = generateSchedule($conn,$players);
+			//saveSchedule($conn, $team);
 			sendMessage($saveMsg);
 			$orangepoint = array(0,0,0);
 			$greenpoint = array(0,0,0);
@@ -408,7 +408,7 @@ function getLastGD($conn, $player)
 
 function getLastPoint($conn, $player)
 {
-	$sql = "SELECT * FROM schedule WHERE win is not null AND lost is not null ORDER BY id DESC";
+	$sql = "SELECT * FROM schedule WHERE schedule_data LIKE '%$player%' AND win is not null AND lost is not null ORDER BY id DESC";
 	$result = $conn->query($sql);
 	$form = '';
 	if ($result->num_rows > 0) {
@@ -554,7 +554,7 @@ function getLastResult($conn, $player)
 
 function getLastTenSchedule($conn, $player)
 {
-	$sql = "SELECT * FROM schedule WHERE win is not null AND lost is not null ORDER BY id DESC LIMIT 10";
+	$sql = "SELECT * FROM schedule WHERE schedule_data LIKE '%$player%' AND win is not null AND lost is not null ORDER BY id DESC LIMIT 10";
 	$result = $conn->query($sql);
 	$form = "";
 	if ($result->num_rows > 0) {
@@ -774,7 +774,7 @@ function sendMessage($msg){
 							<?php $res = getLastResult($conn, $key); ?>
 							<?php $resTen = getLastTenResult($conn, $key); ?>
 							<tr>
-								<td><input type="checkbox" name="player[]" value="<?php echo $key ?>" checked/></td>
+								<td><input type="checkbox" name="player[]" value="<?php echo $key ?>" <?php if ($key != 'Ha' && $key != 'Hiep') echo 'checked'; ?>/></td>
 								<td><?php echo $p; ?></td>
 								<td><?php echo $key; ?></td>
 								<td><?php echo $res[0]; ?></td>
