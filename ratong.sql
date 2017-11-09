@@ -1,16 +1,16 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : LOCALHOST
-Source Server Version : 50505
-Source Host           : localhost:3306
-Source Database       : ratong
+Source Server         : Lotus
+Source Server Version : 50557
+Source Host           : 127.0.0.1:3306
+Source Database       : chanacom_ratong
 
 Target Server Type    : MYSQL
-Target Server Version : 50505
+Target Server Version : 50557
 File Encoding         : 65001
 
-Date: 2017-10-03 18:08:37
+Date: 2017-10-03 23:59:51
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -88,7 +88,7 @@ INSERT INTO `schedule` VALUES ('4', 'a:3:{i:0;a:2:{i:0;s:4:\"Linh\";i:1;s:6:\"Ph
 INSERT INTO `schedule` VALUES ('5', 'a:3:{i:0;a:2:{i:0;s:3:\"Tri\";i:1;s:6:\"Phuong\";}i:1;a:2:{i:0;s:4:\"Linh\";i:1;s:2:\"Ha\";}i:2;a:2:{i:0;s:3:\"Duy\";i:1;s:4:\"Doan\";}}', 'Linh - Ha', 'Tri - Phuong', '2017-09-29 07:06:46');
 INSERT INTO `schedule` VALUES ('6', 'a:3:{i:0;a:2:{i:0;s:3:\"Tri\";i:1;s:4:\"Linh\";}i:1;a:2:{i:0;s:3:\"Duy\";i:1;s:2:\"Ha\";}i:2;a:2:{i:0;s:4:\"Doan\";i:1;s:6:\"Phuong\";}}', 'Doan - Phuong', 'Tri - Linh', '2017-10-02 02:42:29');
 INSERT INTO `schedule` VALUES ('7', 'a:3:{i:0;a:2:{i:0;s:3:\"Tri\";i:1;s:2:\"Ha\";}i:1;a:2:{i:0;s:4:\"Linh\";i:1;s:6:\"Phuong\";}i:2;a:2:{i:0;s:4:\"Doan\";i:1;s:3:\"Duy\";}}', 'Linh - Phuong', 'Doan - Duy', '2017-10-02 06:59:04');
-INSERT INTO `schedule` VALUES ('8', 'a:3:{i:0;a:2:{i:0;s:3:\"Tri\";i:1;s:6:\"Phuong\";}i:1;a:2:{i:0;s:3:\"Duy\";i:1;s:2:\"Ha\";}i:2;a:2:{i:0;s:4:\"Linh\";i:1;s:4:\"Doan\";}}', null, null, '2017-10-02 13:19:34');
-INSERT INTO `schedule` VALUES ('9', 'a:3:{i:0;a:2:{i:0;s:3:\"Tri\";i:1;s:4:\"Linh\";}i:1;a:2:{i:0;s:4:\"Doan\";i:1;s:2:\"Ha\";}i:2;a:2:{i:0;s:3:\"Duy\";i:1;s:6:\"Phuong\";}}', null, null, '2017-10-03 13:39:53');
-INSERT INTO `schedule` VALUES ('10', 'a:3:{i:0;a:2:{i:0;s:3:\"Tri\";i:1;s:2:\"Ha\";}i:1;a:2:{i:0;s:6:\"Phuong\";i:1;s:4:\"Doan\";}i:2;a:2:{i:0;s:4:\"Linh\";i:1;s:3:\"Duy\";}}', null, null, '2017-10-03 17:54:17');
+INSERT INTO `schedule` VALUES ('8', 'a:3:{i:0;a:2:{i:0;s:3:\"Tri\";i:1;s:6:\"Phuong\";}i:1;a:2:{i:0;s:3:\"Duy\";i:1;s:2:\"Ha\";}i:2;a:2:{i:0;s:4:\"Linh\";i:1;s:4:\"Doan\";}}', 'Linh - Doan', 'Tri - Phuong', '2017-10-02 13:19:34');
+INSERT INTO `schedule` VALUES ('9', 'a:3:{i:0;a:2:{i:0;s:3:\"Tri\";i:1;s:4:\"Linh\";}i:1;a:2:{i:0;s:4:\"Doan\";i:1;s:2:\"Ha\";}i:2;a:2:{i:0;s:3:\"Duy\";i:1;s:6:\"Phuong\";}}', 'Doan - Ha', 'Tri - Linh', '2017-10-03 13:39:53');
+INSERT INTO `schedule` VALUES ('10', 'a:3:{i:0;a:2:{i:0;s:3:\"Tri\";i:1;s:2:\"Ha\";}i:1;a:2:{i:0;s:6:\"Phuong\";i:1;s:4:\"Doan\";}i:2;a:2:{i:0;s:4:\"Linh\";i:1;s:3:\"Duy\";}}', 'Phuong - Doan', 'Tri - Ha', '2017-10-03 17:54:17');
 INSERT INTO `schedule` VALUES ('11', 'a:3:{i:0;a:2:{i:0;s:3:\"Tri\";i:1;s:6:\"Phuong\";}i:1;a:2:{i:0;s:4:\"Linh\";i:1;s:2:\"Ha\";}i:2;a:2:{i:0;s:3:\"Duy\";i:1;s:4:\"Doan\";}}', null, null, '2017-10-03 18:07:16');
