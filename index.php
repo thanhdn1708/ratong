@@ -26,17 +26,21 @@
 		.label-success{
 			color: #fff!important;
 			background-color: #d41e8e!important;
+			min-width: 25px;
+			border-radius: 5px;
 		}
 
 		.label-danger {
 			color: #fff!important;
 			background-color: #676767!important;
-
+			min-width: 25px;
+			border-radius: 5px;
 		}
 
 		.label-info {
 			background-color: #337ab7!important;
-
+			min-width: 25px;
+			border-radius: 5px;
 		}
 
 		.generate {
@@ -93,8 +97,9 @@ $playerWinnerWeek = array();
 $playerLost = array();
 // List of lost on week
 $playerLostWeek = array();
+$playerPointTenMatch = array();
 $players = array('Doan','Duy','Ha','Linh','Phuong','Tri','Thanh','Hiep');
-$scheduleTypes = array('Cafe','Bun','Pho','Banh canh','Hu tieu','Xoi','Mi','Bun cha ca','Op la bo');
+$scheduleTypes = array('Cafe','Bun','Pho','Banh canh','Hu tieu','Xoi','Mi','Bun cha ca','Op la bo','Banh cuon');
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -247,12 +252,16 @@ foreach ($players as $key => $value) {
 foreach ($players as $key => $value) {
 	$playerLostWeek[$value] = getPointLostWeek($conn, $value);
 }
+foreach ($players as $key => $value) {
+	$playerPointTenMatch[$value] = getPointTenMatch($conn, $value);
+}
 arsort($playerGD);
 arsort($playerRank);
 arsort($playerWinner);
 arsort($playerWinnerWeek);
 arsort($playerLost);
 arsort($playerLostWeek);
+arsort($playerPointTenMatch);
 
 $history = getMatchHistory($conn);
 $scheduleHistory =getScheduleHistory($conn);
@@ -373,6 +382,32 @@ function getPointLostWeek($conn, $player)
 	$sql = "SELECT * FROM schedule WHERE (schedule_data LIKE '%$para%' AND lost LIKE '%$player%' AND YEARWEEK(datetime) = YEARWEEK(NOW())) ORDER BY id DESC";
 	$result = $conn->query($sql);
 	return $result->num_rows;
+}
+
+function getPointTenMatch($conn, $player)
+{
+	$sql = "SELECT * FROM livescore WHERE (greena = '$player' OR greenb = '$player' OR orangea = '$player' OR orangeb = '$player') ORDER BY id DESC LIMIT 10";
+	$result = $conn->query($sql);
+	$win = 0;
+	if ($result->num_rows > 0) {
+		while($row = $result->fetch_assoc()) {
+			if ($row["greena"] == $player || $row["greenb"] == $player)
+			{
+				if ($row["greenpoint"] == 5)
+				{
+					$win++;
+				}
+			}
+			else
+			{
+				if ($row["orangepoint"] == 5)
+				{
+					$win++;
+				}
+			}
+		}
+	}
+	return $win;
 }
 
 function getSmarterPlayer($conn, $playerLostWeek)
@@ -653,10 +688,10 @@ function getMatePercent($conn, $team)
 {
 	$teama = $team[0] . ' - ' . $team[1];
 	$teamb = $team[1] . ' - ' . $team[0];
-	$sql = "SELECT * FROM schedule WHERE (win = '$teama' OR win = '$teamb') ORDER BY id DESC LIMIT 10";
+	$sql = "SELECT * FROM schedule WHERE (win = '$teama' OR win = '$teamb') ORDER BY id DESC";
 	$result = $conn->query($sql);
 	$win = $result->num_rows;
-	$sql = "SELECT * FROM schedule WHERE (lost = '$teama' OR lost = '$teamb') ORDER BY id DESC LIMIT 10";
+	$sql = "SELECT * FROM schedule WHERE (lost = '$teama' OR lost = '$teamb') ORDER BY id DESC";
 	$result = $conn->query($sql);
 	$lost = $result->num_rows;
 	$total = $win + $lost;
@@ -812,7 +847,7 @@ function sendMessage($msg){
 		</div>
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<h2>The player summary</h2>
+				<h2>The player summary - form table</h2>
 			</div>
 			<div class="panel-body">
 				<form method="post" class="form-inline">
@@ -830,7 +865,7 @@ function sendMessage($msg){
 						</tr>
 						</thead>
 						<tbody>
-						<?php $p=1;foreach ($playerGD as $key => $value): ?>
+						<?php $p=1;foreach ($playerPointTenMatch as $key => $value): ?>
 							<?php $res = getPointMatch($conn, $key); ?>
 							<?php $resTen = getFormTenMatch($conn, $key); ?>
 							<tr>
@@ -839,7 +874,7 @@ function sendMessage($msg){
 								<td><?php echo $key; ?></td>
 								<td><?php echo $res[0]; ?></td>
 								<td><?php echo $res[1]; ?></td>
-								<td><?php echo $value; ?></td>
+								<td><?php echo $playerGD[$key]; ?></td>
 								<td><?php echo $resTen[2]; $p++; ?></td>
 							</tr>
 						<?php endforeach; ?>
