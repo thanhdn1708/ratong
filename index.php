@@ -115,6 +115,15 @@
 			background-image: url(images/hiep.jpg);
 		}
 		@media screen and (max-width: 767px) {
+			.panel-heading .label-success{
+				font-size: 12px;
+				width: 100%;
+				display: grid;
+				line-height: 20px;
+				text-align: left;
+				background-color: #fff!important;
+				color: #999!important;
+			}
 			.table {
 				zoom: 0.7;
 			}
@@ -178,7 +187,7 @@ $playerLost = array();
 $playerLostWeek = array();
 $playerPointTenMatch = array();
 $players = array('Doan','Duy','Ha','Linh','Phuong','Tri','Thanh','Hiep');
-$scheduleTypes = array('Cafe','Bun','Pho','Banh canh','Hu tieu','Xoi','Mi','Bun cha ca','Op la bo','Banh cuon');
+$scheduleTypes = array('Cafe','Bún','Phở','Bánh canh','Hủ tiếu','Xôi','Mì','Bún chả cá','Ốp la bò','Bánh cuốn','Bánh tiêu','Bánh chuối','Bánh bao');
 $nickNameList = array('Doan' => 'Doan Diêm Dúa','Duy' => 'Duy Dặt Dẹo','Ha' => 'Hà Hàm Hồ','Linh' => 'Linh Lạc Loài','Phuong' => 'Phương Phúng Phính','Tri' => 'Trí Trốn Tránh','Thanh' => 'Thạnh Thướt Tha','Hiep' => 'Hiệp Hư Hỏng');
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -264,15 +273,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 				elseif (count(array_unique($scheduleMatch)) === 1)
 				{
 					// case 2: all draw but the point is not same
-					$win = getWinTeam($team,$scheduleMatchPoint);
-					$lost = getLostTeam($team,$scheduleMatchPoint);
+					$win = getWinTeam($conn,$team,$scheduleMatchPoint);
+					$lost = getLostTeam($conn,$team,$scheduleMatchPoint);
 					$saveMsg = "The champions is $win, thanks for donation $lost!!!";
 				}
 				else
 				{
 					// case 3: normal case
-					$win = getWinTeam($team,$scheduleMatch);
-					$lost = getLostTeam($team,$scheduleMatch);
+					$win = getWinTeam($conn,$team,$scheduleMatch);
+					$lost = getLostTeam($conn,$team,$scheduleMatch);
 					$saveMsg = "Congratulations! The champions is $win, thanks for donate $lost!!!";
 				}
 			}
@@ -299,8 +308,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 					}
 					saveMatch($conn, $team[$a], $team[$b], $orangepoint[$j], $greenpoint[$j]);
 				}
-				$win = getWinTeam($team,$scheduleMatch);
-				$lost = getLostTeam($team,$scheduleMatch);
+				$win = getWinTeam($conn,$team,$scheduleMatch);
+				$lost = getLostTeam($conn,$team,$scheduleMatch);
 				$saveMsg = "Congratulations! The champions is $win, thanks for donate $lost!!!";
 			}
 			saveSchedule($conn, $win, $lost, $scheduleType);
@@ -393,28 +402,83 @@ function getPlayer($key) {
 	$nickName = $nickNameList[$key];
 	$achive = '';
 	if (in_array($key, getMostPlayer($playerWinnerWeek)))
-		$achive = $achive . " <i class='fa fa-star' data-toggle='tooltip' title='The best player of the week' aria-hidden='true'></i>";
+		$achive = $achive . " <i class='fa fa-trophy' data-toggle='tooltip' title='The best player of the week' aria-hidden='true'></i>";
 	if (in_array($key, getMostPlayer($playerWinner)))
 		$achive = $achive . " <i class='fa fa-diamond' data-toggle='tooltip' title='The legend of legends' aria-hidden='true'></i>";
 	if (in_array($key, $playerSmarter))
-		$achive = $achive . " <i class='fa fa-btc' data-toggle='tooltip' title='The smartest player of the week' aria-hidden='true'></i>";
+		$achive = $achive . " <i class='fa fa-star' data-toggle='tooltip' title='The smartest player of the week' aria-hidden='true'></i>";
 	if (in_array($key, getMostPlayer($playerLostWeek)))
 		$achive = $achive . " <i class='fa fa-battery-empty' data-toggle='tooltip' title='The loser of the week' aria-hidden='true'></i>";
 	if (in_array($key, getMostPlayer($playerLost)))
 		$achive = $achive . " <i class='fa fa-heartbeat' data-toggle='tooltip' title='The worst player ever' aria-hidden='true'></i>";
+	if ($key == 'Thanh') $achive = $achive . " <i class='fa fa-gamepad' data-toggle='tooltip' title='The game master' aria-hidden='true'></i>";
 	$html = "<span id='$key' class=''>$nickName $achive</span>";
 	return $html;
 }
 
-function getWinTeam($team,$array) {
+function getWinTeam($conn,$team,$array) {
 	$max = max($array);
-	$key = array_search($max, $array);
+	$win = array_keys($array, $max, true);
+	if (count($win) == 1)
+	{
+		$key = array_search($max, $array);
+	}
+	elseif (count($win) == 2)
+	{
+		$t1 = $team[$win[0]][0];
+		$t2 = $team[$win[1]][0];
+		$sql = "SELECT * FROM livescore WHERE (orangea = '$t1' AND greena = '$t2') OR (orangea = '$t2' AND greena = '$t1') ORDER BY id DESC LIMIT 1";
+		$result = $conn->query($sql);
+		if ($result->num_rows > 0) {
+			while($row = $result->fetch_assoc()) {
+				if ($row["greenpoint"] < $row["orangepoint"])
+				{
+					if ($row["orangea"] == $t1)
+						$key = $win[0];
+					else $key = $win[1];
+				}
+				else
+				{
+					if ($row["orangea"] == $t1)
+						$key = $win[1];
+					else $key = $win[0];
+				}
+			}
+		}
+	}
 	return $team[$key][0] . ' - '. $team[$key][1];
 }
 
-function getLostTeam($team,$array) {
+function getLostTeam($conn,$team,$array) {
 	$min = min($array);
-	$key = array_search($min, $array);
+	$lost = array_keys($array, $min, true);
+	if (count($lost) == 1)
+	{
+		$key = array_search($min, $array);
+	}
+	elseif (count($lost) == 2)
+	{
+		$t1 = $team[$lost[0]][0];
+		$t2 = $team[$lost[1]][0];
+		$sql = "SELECT * FROM livescore WHERE (orangea = '$t1' AND greena = '$t2') OR (orangea = '$t2' AND greena = '$t1') ORDER BY id DESC LIMIT 1";
+		$result = $conn->query($sql);
+		if ($result->num_rows > 0) {
+			while($row = $result->fetch_assoc()) {
+				if ($row["greenpoint"] < $row["orangepoint"])
+				{
+					if ($row["orangea"] == $t1)
+						$key = $lost[1];
+					else $key = $lost[0];
+				}
+				else
+				{
+					if ($row["orangea"] == $t1)
+						$key = $lost[0];
+					else $key = $lost[1];
+				}
+			}
+		}
+	}
 	return $team[$key][0] . ' - '. $team[$key][1];
 }
 // ---------------- //
@@ -471,7 +535,7 @@ function getPointRank($conn, $player)
 function getPointWin($conn, $player)
 {
 	$para = '"' . $player . '"';
-	$sql = "SELECT * FROM schedule WHERE (schedule_data LIKE '%$para%' AND win LIKE '%$player%') ORDER BY id DESC";
+	$sql = "SELECT * FROM schedule WHERE (schedule_data LIKE '%$para%' AND win LIKE BINARY '%$player%') ORDER BY id DESC";
 	$result = $conn->query($sql);
 	return $result->num_rows;
 }
@@ -479,7 +543,7 @@ function getPointWin($conn, $player)
 function getPointLost($conn, $player)
 {
 	$para = '"' . $player . '"';
-	$sql = "SELECT * FROM schedule WHERE (schedule_data LIKE '%$para%' AND lost LIKE '%$player%') ORDER BY id DESC";
+	$sql = "SELECT * FROM schedule WHERE (schedule_data LIKE '%$para%' AND lost LIKE BINARY '%$player%') ORDER BY id DESC";
 	$result = $conn->query($sql);
 	return $result->num_rows;
 }
@@ -487,7 +551,7 @@ function getPointLost($conn, $player)
 function getPointWinWeek($conn, $player)
 {
 	$para = '"' . $player . '"';
-	$sql = "SELECT * FROM schedule WHERE (schedule_data LIKE '%$para%' AND win LIKE '%$player%'  AND YEARWEEK(datetime) = YEARWEEK(NOW())) ORDER BY id DESC ";
+	$sql = "SELECT * FROM schedule WHERE (schedule_data LIKE '%$para%' AND win LIKE BINARY '%$player%'  AND YEARWEEK(datetime) = YEARWEEK(NOW())) ORDER BY id DESC ";
 	$result = $conn->query($sql);
 	return $result->num_rows;
 }
@@ -495,7 +559,7 @@ function getPointWinWeek($conn, $player)
 function getPointLostWeek($conn, $player)
 {
 	$para = '"' . $player . '"';
-	$sql = "SELECT * FROM schedule WHERE (schedule_data LIKE '%$para%' AND lost LIKE '%$player%' AND YEARWEEK(datetime) = YEARWEEK(NOW())) ORDER BY id DESC";
+	$sql = "SELECT * FROM schedule WHERE (schedule_data LIKE '%$para%' AND lost LIKE BINARY '%$player%' AND YEARWEEK(datetime) = YEARWEEK(NOW())) ORDER BY id DESC";
 	$result = $conn->query($sql);
 	return $result->num_rows;
 }
@@ -705,7 +769,7 @@ function getFormTenSchedule($conn, $player)
 function getMatchHistory($conn)
 {
 	$tempHistory = array();
-	$sql = "SELECT * FROM livescore ORDER BY id DESC LIMIT 30";
+	$sql = "SELECT * FROM livescore ORDER BY id DESC LIMIT 90";
 	$result = $conn->query($sql);
 	if ($result->num_rows > 0) {
 		while($row = $result->fetch_assoc()) {
@@ -719,7 +783,7 @@ function getMatchHistory($conn)
 
 function getScheduleHistory($conn)
 {
-	$sql = "SELECT * FROM schedule WHERE win is not null AND lost is not null  ORDER BY id DESC LIMIT 10";
+	$sql = "SELECT * FROM schedule WHERE win is not null AND lost is not null  ORDER BY id DESC LIMIT 30";
 	$result = $conn->query($sql);
 	$tempHistory = array();
 	if ($result->num_rows > 0) {
@@ -739,6 +803,7 @@ function generateSchedule($conn,$players) {
 	$playerPoint = array();
 	$playerRank = array();
 	$type = rand(1,3);
+	$msgType = "Type: $type";
 	switch ($type) {
 		case 0:
 			foreach ($players as $key => $value) {
@@ -750,25 +815,40 @@ function generateSchedule($conn,$players) {
 			foreach ($players as $key => $value) {
 				$playerPoint[$value] = getPointRank($conn, $value);
 			}
+			$msgType = $msgType . ' - the table rank type!';
 			break;
 
 		case 2:
 			foreach ($players as $key => $value) {
 				$playerPoint[$value] = getPointWinWeek($conn, $value);
 			}
+			$msgType = $msgType . ' - the win of week type!';
 			break;
 
 		case 3:
 			foreach ($players as $key => $value) {
 				$playerPoint[$value] = getPointLostWeek($conn, $value);
 			}
+			$msgType = $msgType . ' - the lost of week type!';
 			break;
 	}
+
 
 	asort($playerPoint);
 	foreach ($playerPoint as $key => $value) {
 		$playerRank[] = $key;
 	}
+
+	sendMessage($msgType);
+	sleep(2);
+
+	$msgGroup1 = "Group 1: $playerRank[0], $playerRank[1], $playerRank[2]";
+	sendMessage($msgGroup1);
+	sleep(2);
+
+	$msgGroup2 = "Group 2: $playerRank[3], $playerRank[4], $playerRank[5]";
+	sendMessage($msgGroup2);
+	sleep(2);
 	$temp = array();
 	$i = 0;
 	$playerDivide = count($playerRank) / 2;
@@ -798,6 +878,9 @@ function generateSchedule($conn,$players) {
 			$temp[] = $mate;
 			$team[$i] = array($player,$playerRank[$mate]);
 			$i++;
+			$msg = "Team $i: $player $playerRank[$mate]";
+			sendMessage($msg);
+			sleep(2);
 		}
 	}
 	return $team;
@@ -956,6 +1039,7 @@ function sendMessage($msg){
 					<tr>
 						<th class="text-center">Rank</th>
 						<th class="text-center">Name</th>
+						<th class="text-center">App</th>
 						<th class="text-center">Won</th>
 						<th class="text-center">Drawn</th>
 						<th class="text-center">Lost</th>
@@ -969,6 +1053,7 @@ function sendMessage($msg){
 						<tr>
 							<td><?php echo $p; ?></td>
 							<td class="player"><?php echo getPlayer($key); ?></td>
+							<td><?php echo (int)($playerWinner[$key] + $playerLost[$key] + ($value - $playerWinner[$key] * 3)); ?></td>
 							<td><?php echo $playerWinner[$key]; ?></td>
 							<td><?php echo $value - $playerWinner[$key] * 3; ?></td>
 							<td><?php echo $playerLost[$key]; ?></td>
@@ -1144,24 +1229,23 @@ function sendMessage($msg){
 					<tbody>
 					<tr>
 						<td>1</td>
-						<td>The legend of legends.</td>
-						<td><?php echo getAchivementPlayer(getMostPlayer($playerWinner)); ?></td>
-						<td><?php echo max($playerWinner); ?> wins/total</td>
-					</tr>
-					<tr>
-						<td>2</td>
 						<td>The player of the week.</td>
 						<td><?php echo getAchivementPlayer(getMostPlayer($playerWinnerWeek));?>
 						</td>
 						<td><?php echo max($playerWinnerWeek); ?> wins/this week</td>
 					</tr>
-
+					<tr>
+						<td>2</td>
+						<td>The legend of legends.</td>
+						<td><?php echo getAchivementPlayer(getMostPlayer($playerWinner)); ?></td>
+						<td><?php echo max($playerWinner); ?> wins/total</td>
+					</tr>
 					<tr>
 						<td>3</td>
 						<td>The smartest player.</td>
 						<?php $smart = getSmarterPlayer($conn, $playerLostWeek) ?>
 						<td><?php echo getAchivementPlayer($smart[0]); ?> </td>
-						<td><?php echo $smart[1]; ?></td>
+						<td><?php echo $smart[1]; ?> defeats/this week</td>
 					</tr>
 					<tr>
 						<td>4</td>
