@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50557
 File Encoding         : 65001
 
-Date: 2017-10-31 15:21:29
+Date: 2017-11-10 07:57:07
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -29,7 +29,7 @@ CREATE TABLE `livescore` (
   `greenpoint` smallint(11) DEFAULT NULL,
   `datetime` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=179 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=233 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of livescore
@@ -212,6 +212,60 @@ INSERT INTO `livescore` VALUES ('175', '85', 'Ha', 'Duy', '5', 'Thanh', 'Doan', 
 INSERT INTO `livescore` VALUES ('176', '87', 'Phuong', 'Ha', '5', 'Linh', 'Duy', '2', '2017-10-30 23:37:02');
 INSERT INTO `livescore` VALUES ('177', '87', 'Linh', 'Duy', '4', 'Doan', 'Tri', '5', '2017-10-30 23:37:02');
 INSERT INTO `livescore` VALUES ('178', '87', 'Doan', 'Tri', '5', 'Phuong', 'Ha', '4', '2017-10-30 23:37:02');
+INSERT INTO `livescore` VALUES ('179', '88', 'Phuong', 'Duy', '5', 'Thanh', 'Tri', '3', '2017-10-31 03:52:44');
+INSERT INTO `livescore` VALUES ('180', '88', 'Thanh', 'Tri', '4', 'Ha', 'Doan', '5', '2017-10-31 03:52:44');
+INSERT INTO `livescore` VALUES ('181', '88', 'Ha', 'Doan', '5', 'Phuong', 'Duy', '2', '2017-10-31 03:52:44');
+INSERT INTO `livescore` VALUES ('182', '89', 'Duy', 'Ha', '5', 'Thanh', 'Phuong', '0', '2017-10-31 04:05:07');
+INSERT INTO `livescore` VALUES ('183', '89', 'Thanh', 'Phuong', '5', 'Doan', 'Tri', '4', '2017-10-31 04:05:07');
+INSERT INTO `livescore` VALUES ('184', '89', 'Doan', 'Tri', '2', 'Duy', 'Ha', '5', '2017-10-31 04:05:07');
+INSERT INTO `livescore` VALUES ('185', '90', 'Phuong', 'Doan', '5', 'Duy', 'Ha', '2', '2017-10-31 23:39:21');
+INSERT INTO `livescore` VALUES ('186', '90', 'Duy', 'Ha', '5', 'Linh', 'Tri', '1', '2017-10-31 23:39:21');
+INSERT INTO `livescore` VALUES ('187', '90', 'Linh', 'Tri', '2', 'Phuong', 'Doan', '5', '2017-10-31 23:39:21');
+INSERT INTO `livescore` VALUES ('188', '91', 'Duy', 'Phuong', '5', 'Thanh', 'Ha', '0', '2017-11-01 04:01:33');
+INSERT INTO `livescore` VALUES ('189', '91', 'Thanh', 'Ha', '5', 'Tri', 'Doan', '4', '2017-11-01 04:01:33');
+INSERT INTO `livescore` VALUES ('190', '91', 'Tri', 'Doan', '5', 'Duy', 'Phuong', '4', '2017-11-01 04:01:33');
+INSERT INTO `livescore` VALUES ('191', '92', 'Thanh', 'Linh', '3', 'Tri', 'Duy', '5', '2017-11-01 04:12:33');
+INSERT INTO `livescore` VALUES ('192', '92', 'Tri', 'Duy', '5', 'Ha', 'Phuong', '3', '2017-11-01 04:12:33');
+INSERT INTO `livescore` VALUES ('193', '92', 'Ha', 'Phuong', '0', 'Thanh', 'Linh', '5', '2017-11-01 04:12:33');
+INSERT INTO `livescore` VALUES ('194', '93', 'Linh', 'Ha', '5', 'Duy', 'Phuong', '3', '2017-11-01 23:38:54');
+INSERT INTO `livescore` VALUES ('195', '93', 'Duy', 'Phuong', '5', 'Doan', 'Tri', '2', '2017-11-01 23:38:54');
+INSERT INTO `livescore` VALUES ('196', '93', 'Doan', 'Tri', '0', 'Linh', 'Ha', '5', '2017-11-01 23:38:54');
+INSERT INTO `livescore` VALUES ('197', '95', 'Linh', 'Duy', '5', 'Doan', 'Ha', '2', '2017-11-02 03:50:26');
+INSERT INTO `livescore` VALUES ('198', '95', 'Doan', 'Ha', '5', 'Tri', 'Phuong', '1', '2017-11-02 03:50:26');
+INSERT INTO `livescore` VALUES ('199', '95', 'Tri', 'Phuong', '4', 'Linh', 'Duy', '5', '2017-11-02 03:50:26');
+INSERT INTO `livescore` VALUES ('200', '96', 'Phuong', 'Doan', '2', 'Duy', 'Ha', '5', '2017-11-02 04:03:03');
+INSERT INTO `livescore` VALUES ('201', '96', 'Duy', 'Ha', '5', 'Thanh', 'Linh', '1', '2017-11-02 04:03:03');
+INSERT INTO `livescore` VALUES ('202', '96', 'Thanh', 'Linh', '1', 'Phuong', 'Doan', '5', '2017-11-02 04:03:03');
+INSERT INTO `livescore` VALUES ('203', '98', 'Phuong', 'Thanh', '4', 'Duy', 'Tri', '5', '2017-11-02 23:40:26');
+INSERT INTO `livescore` VALUES ('204', '98', 'Duy', 'Tri', '4', 'Doan', 'Ha', '5', '2017-11-02 23:40:26');
+INSERT INTO `livescore` VALUES ('205', '98', 'Doan', 'Ha', '5', 'Phuong', 'Thanh', '4', '2017-11-02 23:40:26');
+INSERT INTO `livescore` VALUES ('206', '100', 'Tri', 'Doan', '3', 'Linh', 'Duy', '5', '2017-11-03 03:59:00');
+INSERT INTO `livescore` VALUES ('207', '100', 'Linh', 'Duy', '5', 'Ha', 'Phuong', '3', '2017-11-03 03:59:00');
+INSERT INTO `livescore` VALUES ('208', '100', 'Ha', 'Phuong', '5', 'Tri', 'Doan', '1', '2017-11-03 03:59:00');
+INSERT INTO `livescore` VALUES ('209', '102', 'Tri', 'Phuong', '2', 'Linh', 'Ha', '5', '2017-11-03 04:14:53');
+INSERT INTO `livescore` VALUES ('210', '102', 'Linh', 'Ha', '3', 'Doan', 'Duy', '5', '2017-11-03 04:14:53');
+INSERT INTO `livescore` VALUES ('211', '102', 'Doan', 'Duy', '4', 'Tri', 'Phuong', '5', '2017-11-03 04:14:53');
+INSERT INTO `livescore` VALUES ('212', '104', 'Tri', 'Doan', '5', 'Linh', 'Phuong', '2', '2017-11-07 23:40:34');
+INSERT INTO `livescore` VALUES ('213', '104', 'Linh', 'Phuong', '0', 'Ha', 'Duy', '5', '2017-11-07 23:40:34');
+INSERT INTO `livescore` VALUES ('214', '104', 'Ha', 'Duy', '5', 'Tri', 'Doan', '1', '2017-11-07 23:40:34');
+INSERT INTO `livescore` VALUES ('215', '106', 'Tri', 'Duy', '1', 'Linh', 'Doan', '5', '2017-11-08 03:47:56');
+INSERT INTO `livescore` VALUES ('216', '106', 'Linh', 'Doan', '5', 'Ha', 'Phuong', '2', '2017-11-08 03:47:56');
+INSERT INTO `livescore` VALUES ('217', '106', 'Ha', 'Phuong', '5', 'Tri', 'Duy', '3', '2017-11-08 03:47:56');
+INSERT INTO `livescore` VALUES ('218', '107', 'Tri', 'Doan', '5', 'Linh', 'Phuong', '4', '2017-11-08 04:03:59');
+INSERT INTO `livescore` VALUES ('219', '107', 'Linh', 'Phuong', '4', 'Ha', 'Duy', '5', '2017-11-08 04:03:59');
+INSERT INTO `livescore` VALUES ('220', '107', 'Ha', 'Duy', '5', 'Tri', 'Doan', '4', '2017-11-08 04:03:59');
+INSERT INTO `livescore` VALUES ('221', '108', 'Tri', 'Ha', '4', 'Phuong', 'Doan', '5', '2017-11-08 23:44:17');
+INSERT INTO `livescore` VALUES ('222', '108', 'Phuong', 'Doan', '5', 'Thanh', 'Linh', '4', '2017-11-08 23:44:17');
+INSERT INTO `livescore` VALUES ('223', '108', 'Thanh', 'Linh', '1', 'Tri', 'Ha', '5', '2017-11-08 23:44:17');
+INSERT INTO `livescore` VALUES ('224', '113', 'Doan', 'Ha', '5', 'Tri', 'Linh', '2', '2017-11-09 03:51:12');
+INSERT INTO `livescore` VALUES ('225', '113', 'Tri', 'Linh', '0', 'Duy', 'Phuong', '5', '2017-11-09 03:51:12');
+INSERT INTO `livescore` VALUES ('226', '113', 'Duy', 'Phuong', '5', 'Doan', 'Ha', '2', '2017-11-09 03:51:12');
+INSERT INTO `livescore` VALUES ('227', '114', 'Doan', 'Phuong', '5', 'Duy', 'Tri', '3', '2017-11-09 04:00:35');
+INSERT INTO `livescore` VALUES ('228', '114', 'Duy', 'Tri', '1', 'Ha', 'Linh', '5', '2017-11-09 04:00:35');
+INSERT INTO `livescore` VALUES ('229', '114', 'Ha', 'Linh', '5', 'Doan', 'Phuong', '1', '2017-11-09 04:00:35');
+INSERT INTO `livescore` VALUES ('230', '115', 'Doan', 'Linh', '5', 'Ha', 'Duy', '3', '2017-11-09 04:14:26');
+INSERT INTO `livescore` VALUES ('231', '115', 'Ha', 'Duy', '5', 'Thanh', 'Tri', '1', '2017-11-09 04:14:26');
+INSERT INTO `livescore` VALUES ('232', '115', 'Thanh', 'Tri', '0', 'Doan', 'Linh', '5', '2017-11-09 04:14:26');
 
 -- ----------------------------
 -- Table structure for `schedule`
@@ -225,7 +279,7 @@ CREATE TABLE `schedule` (
   `datetime` timestamp NULL DEFAULT NULL,
   `schedule_type` smallint(11) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=88 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=116 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of schedule
@@ -309,3 +363,30 @@ INSERT INTO `schedule` VALUES ('84', 'a:3:{i:0;a:2:{i:0;s:3:\"Tri\";i:1;s:3:\"Du
 INSERT INTO `schedule` VALUES ('85', 'a:3:{i:0;a:2:{i:0;s:5:\"Thanh\";i:1;s:4:\"Doan\";}i:1;a:2:{i:0;s:3:\"Tri\";i:1;s:6:\"Phuong\";}i:2;a:2:{i:0;s:2:\"Ha\";i:1;s:3:\"Duy\";}}', 'Tri - Phuong', 'Thanh - Doan', '2017-10-30 04:08:11', '3');
 INSERT INTO `schedule` VALUES ('86', 'a:3:{i:0;a:2:{i:0;s:4:\"Linh\";i:1;s:5:\"Thanh\";}i:1;a:2:{i:0;s:3:\"Duy\";i:1;s:3:\"Tri\";}i:2;a:2:{i:0;s:4:\"Doan\";i:1;s:2:\"Ha\";}}', null, null, '2017-10-30 21:11:47', '0');
 INSERT INTO `schedule` VALUES ('87', 'a:3:{i:0;a:2:{i:0;s:6:\"Phuong\";i:1;s:2:\"Ha\";}i:1;a:2:{i:0;s:4:\"Linh\";i:1;s:3:\"Duy\";}i:2;a:2:{i:0;s:4:\"Doan\";i:1;s:3:\"Tri\";}}', 'Doan - Tri', 'Linh - Duy', '2017-10-30 23:37:02', '0');
+INSERT INTO `schedule` VALUES ('88', 'a:3:{i:0;a:2:{i:0;s:6:\"Phuong\";i:1;s:3:\"Duy\";}i:1;a:2:{i:0;s:5:\"Thanh\";i:1;s:3:\"Tri\";}i:2;a:2:{i:0;s:2:\"Ha\";i:1;s:4:\"Doan\";}}', 'Ha - Doan', 'Thanh - Tri', '2017-10-31 03:52:44', '0');
+INSERT INTO `schedule` VALUES ('89', 'a:3:{i:0;a:2:{i:0;s:3:\"Duy\";i:1;s:2:\"Ha\";}i:1;a:2:{i:0;s:5:\"Thanh\";i:1;s:6:\"Phuong\";}i:2;a:2:{i:0;s:4:\"Doan\";i:1;s:3:\"Tri\";}}', 'Duy - Ha', 'Doan - Tri', '2017-10-31 04:05:07', '8');
+INSERT INTO `schedule` VALUES ('90', 'a:3:{i:0;a:2:{i:0;s:6:\"Phuong\";i:1;s:4:\"Doan\";}i:1;a:2:{i:0;s:3:\"Duy\";i:1;s:5:\"Ha\";}i:2;a:2:{i:0;s:4:\"Linh\";i:1;s:3:\"Tri\";}}', 'Phuong - Doan', 'Linh - Tri', '2017-10-31 23:39:21', '0');
+INSERT INTO `schedule` VALUES ('91', 'a:3:{i:0;a:2:{i:0;s:3:\"Duy\";i:1;s:6:\"Phuong\";}i:1;a:2:{i:0;s:5:\"Thanh\";i:1;s:2:\"Ha\";}i:2;a:2:{i:0;s:3:\"Tri\";i:1;s:4:\"Doan\";}}', 'Duy - Phuong', 'Thanh - Ha', '2017-11-01 04:01:33', '0');
+INSERT INTO `schedule` VALUES ('92', 'a:3:{i:0;a:2:{i:0;s:5:\"Thanh\";i:1;s:4:\"Linh\";}i:1;a:2:{i:0;s:3:\"Tri\";i:1;s:3:\"Duy\";}i:2;a:2:{i:0;s:2:\"Ha\";i:1;s:6:\"Phuong\";}}', 'Tri - Duy', 'Ha - Phuong', '2017-11-01 04:12:33', '5');
+INSERT INTO `schedule` VALUES ('93', 'a:3:{i:0;a:2:{i:0;s:4:\"Linh\";i:1;s:2:\"Ha\";}i:1;a:2:{i:0;s:3:\"Duy\";i:1;s:6:\"Phuong\";}i:2;a:2:{i:0;s:4:\"Doan\";i:1;s:3:\"Tri\";}}', 'Linh - Ha', 'Doan - Tri', '2017-11-01 23:38:54', '0');
+INSERT INTO `schedule` VALUES ('94', 'a:3:{i:0;a:2:{i:0;s:6:\"Phuong\";i:1;s:4:\"Doan\";}i:1;a:2:{i:0;s:3:\"Duy\";i:1;s:3:\"Tri\";}i:2;a:2:{i:0;s:4:\"Linh\";i:1;s:2:\"Ha\";}}', null, null, '2017-11-01 23:41:57', '0');
+INSERT INTO `schedule` VALUES ('95', 'a:3:{i:0;a:2:{i:0;s:4:\"Linh\";i:1;s:3:\"Duy\";}i:1;a:2:{i:0;s:4:\"Doan\";i:1;s:2:\"Ha\";}i:2;a:2:{i:0;s:3:\"Tri\";i:1;s:6:\"Phuong\";}}', 'Linh - Duy', 'Tri - Phuong', '2017-11-02 03:50:26', '0');
+INSERT INTO `schedule` VALUES ('96', 'a:3:{i:0;a:2:{i:0;s:6:\"Phuong\";i:1;s:4:\"Doan\";}i:1;a:2:{i:0;s:3:\"Duy\";i:1;s:2:\"Ha\";}i:2;a:2:{i:0;s:5:\"Thanh\";i:1;s:4:\"Linh\";}}', 'Duy - Ha', 'Thanh - Linh', '2017-11-02 04:03:03', '7');
+INSERT INTO `schedule` VALUES ('97', 'a:3:{i:0;a:2:{i:0;s:6:\"Phuong\";i:1;s:3:\"Tri\";}i:1;a:2:{i:0;s:3:\"Duy\";i:1;s:4:\"Linh\";}i:2;a:2:{i:0;s:4:\"Doan\";i:1;s:2:\"Ha\";}}', null, null, '2017-11-02 19:32:59', '0');
+INSERT INTO `schedule` VALUES ('98', 'a:3:{i:0;a:2:{i:0;s:6:\"Phuong\";i:1;s:5:\"Thanh\";}i:1;a:2:{i:0;s:3:\"Duy\";i:1;s:3:\"Tri\";}i:2;a:2:{i:0;s:4:\"Doan\";i:1;s:2:\"Ha\";}}', 'Doan - Ha', 'Phuong - Thanh', '2017-11-02 23:40:26', '0');
+INSERT INTO `schedule` VALUES ('99', 'a:3:{i:0;a:2:{i:0;s:3:\"Duy\";i:1;s:4:\"Linh\";}i:1;a:2:{i:0;s:6:\"Phuong\";i:1;s:3:\"Tri\";}i:2;a:2:{i:0;s:4:\"Doan\";i:1;s:2:\"Ha\";}}', null, null, '2017-11-03 02:52:53', '0');
+INSERT INTO `schedule` VALUES ('100', 'a:3:{i:0;a:2:{i:0;s:3:\"Tri\";i:1;s:4:\"Doan\";}i:1;a:2:{i:0;s:4:\"Linh\";i:1;s:3:\"Duy\";}i:2;a:2:{i:0;s:2:\"Ha\";i:1;s:6:\"Phuong\";}}', 'Linh - Duy', 'Tri - Doan', '2017-11-03 03:59:00', '0');
+INSERT INTO `schedule` VALUES ('101', 'a:3:{i:0;a:2:{i:0;s:3:\"Duy\";i:1;s:2:\"Ha\";}i:1;a:2:{i:0;s:6:\"Phuong\";i:1;s:4:\"Linh\";}i:2;a:2:{i:0;s:4:\"Doan\";i:1;s:3:\"Tri\";}}', null, null, '2017-11-03 03:59:16', '0');
+INSERT INTO `schedule` VALUES ('102', 'a:3:{i:0;a:2:{i:0;s:3:\"Tri\";i:1;s:6:\"Phuong\";}i:1;a:2:{i:0;s:4:\"Linh\";i:1;s:2:\"Ha\";}i:2;a:2:{i:0;s:4:\"Doan\";i:1;s:3:\"Duy\";}}', 'Doan - Duy', 'Tri - Phuong', '2017-11-03 04:14:53', '1');
+INSERT INTO `schedule` VALUES ('103', 'a:2:{i:0;a:2:{i:0;s:4:\"Doan\";i:1;s:2:\"Ha\";}i:1;a:2:{i:0;s:4:\"Linh\";i:1;s:3:\"Duy\";}}', null, null, '2017-11-06 01:13:45', '0');
+INSERT INTO `schedule` VALUES ('104', 'a:3:{i:0;a:2:{i:0;s:3:\"Tri\";i:1;s:4:\"Doan\";}i:1;a:2:{i:0;s:4:\"Linh\";i:1;s:6:\"Phuong\";}i:2;a:2:{i:0;s:2:\"Ha\";i:1;s:3:\"Duy\";}}', 'Ha - Duy', 'Linh - Phuong', '2017-11-07 23:40:34', '0');
+INSERT INTO `schedule` VALUES ('106', 'a:3:{i:0;a:2:{i:0;s:3:\"Tri\";i:1;s:3:\"Duy\";}i:1;a:2:{i:0;s:4:\"Linh\";i:1;s:4:\"Doan\";}i:2;a:2:{i:0;s:2:\"Ha\";i:1;s:6:\"Phuong\";}}', 'Linh - Doan', 'Tri - Duy', '2017-11-08 03:47:56', '0');
+INSERT INTO `schedule` VALUES ('107', 'a:3:{i:0;a:2:{i:0;s:3:\"Tri\";i:1;s:4:\"Doan\";}i:1;a:2:{i:0;s:4:\"Linh\";i:1;s:6:\"Phuong\";}i:2;a:2:{i:0;s:2:\"Ha\";i:1;s:3:\"Duy\";}}', 'Ha - Duy', 'Linh - Phuong', '2017-11-08 04:03:59', '8');
+INSERT INTO `schedule` VALUES ('108', 'a:3:{i:0;a:2:{i:0;s:3:\"Tri\";i:1;s:2:\"Ha\";}i:1;a:2:{i:0;s:6:\"Phuong\";i:1;s:4:\"Doan\";}i:2;a:2:{i:0;s:5:\"Thanh\";i:1;s:4:\"Linh\";}}', 'Phuong - Doan', 'Thanh - Linh', '2017-11-08 23:44:17', '0');
+INSERT INTO `schedule` VALUES ('109', 'a:3:{i:0;a:2:{i:0;s:3:\"Tri\";i:1;s:6:\"Phuong\";}i:1;a:2:{i:0;s:5:\"Thanh\";i:1;s:3:\"Duy\";}i:2;a:2:{i:0;s:4:\"Linh\";i:1;s:2:\"Ha\";}}', null, null, '2017-11-09 01:16:24', '0');
+INSERT INTO `schedule` VALUES ('110', 'a:3:{i:0;a:2:{i:0;s:3:\"Tri\";i:1;s:4:\"Linh\";}i:1;a:2:{i:0;s:2:\"Ha\";i:1;s:5:\"Thanh\";}i:2;a:2:{i:0;s:3:\"Duy\";i:1;s:6:\"Phuong\";}}', null, null, '2017-11-09 01:20:11', '0');
+INSERT INTO `schedule` VALUES ('111', 'a:3:{i:0;a:2:{i:0;s:3:\"Tri\";i:1;s:4:\"Linh\";}i:1;a:2:{i:0;s:2:\"Ha\";i:1;s:5:\"Thanh\";}i:2;a:2:{i:0;s:3:\"Duy\";i:1;s:6:\"Phuong\";}}', null, null, '2017-11-09 01:21:09', '0');
+INSERT INTO `schedule` VALUES ('112', 'a:2:{i:0;a:2:{i:0;s:4:\"Doan\";i:1;s:2:\"Ha\";}i:1;a:2:{i:0;s:3:\"Duy\";i:1;s:6:\"Phuong\";}}', null, null, '2017-11-09 01:36:04', '0');
+INSERT INTO `schedule` VALUES ('113', 'a:3:{i:0;a:2:{i:0;s:4:\"Doan\";i:1;s:2:\"Ha\";}i:1;a:2:{i:0;s:3:\"Tri\";i:1;s:4:\"Linh\";}i:2;a:2:{i:0;s:3:\"Duy\";i:1;s:6:\"Phuong\";}}', 'Duy - Phuong', 'Tri - Linh', '2017-11-09 03:51:12', '0');
+INSERT INTO `schedule` VALUES ('114', 'a:3:{i:0;a:2:{i:0;s:4:\"Doan\";i:1;s:6:\"Phuong\";}i:1;a:2:{i:0;s:3:\"Duy\";i:1;s:3:\"Tri\";}i:2;a:2:{i:0;s:2:\"Ha\";i:1;s:4:\"Linh\";}}', 'Ha - Linh', 'Duy - Tri', '2017-11-09 04:00:35', '6');
+INSERT INTO `schedule` VALUES ('115', 'a:3:{i:0;a:2:{i:0;s:4:\"Doan\";i:1;s:4:\"Linh\";}i:1;a:2:{i:0;s:2:\"Ha\";i:1;s:3:\"Duy\";}i:2;a:2:{i:0;s:5:\"Thanh\";i:1;s:3:\"Tri\";}}', 'Doan - Linh', 'Thanh - Tri', '2017-11-09 04:14:26', '6');
