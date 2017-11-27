@@ -158,17 +158,17 @@ input {
   .player span {
   	line-height: 18px;
   }
+  .badge {
+  	margin-bottom: 1px!important;
+  }
+  .player .avatar {margin-left: 20px;}
 }
 </style>
 </head>
 <body>  
 
 	<?php
-	// Database config
-	$servername = "127.0.0.1";
-	$username = "chanacom_ratong";
-	$password = "0[+121%5g5@J";
-	$dbname = "chanacom_ratong";
+	include("config.php");
 
 	// Msg config
 	$keyErr =  "";
@@ -201,7 +201,7 @@ input {
 	$playerPointTenMatch = array();
 	$players = array('Doan','Duy','Ha','Linh','Phuong','Tri','Thanh');
 	$scheduleTypes = array('Cafe','Bún','Phở','Bánh canh','Hủ tiếu','Xôi','Mì','Bún chả cá','Ốp la bò','Bánh cuốn','Bánh tiêu','Bánh chuối','Bánh bao');
-	$nickNameList = array('Doan' => 'Doan Diêm Dúa','Duy' => 'Duy Dặt Dẹo','Ha' => 'Hà Hàm Hồ','Linh' => 'Linh Lạc Loài','Phuong' => 'Phương Phúng Phính','Tri' => 'Trí Trốn Tránh','Thanh' => 'Thạnh Thướt Tha','Hiep' => 'Hiệp Hư Hỏng');
+	$nickNameList = array('Doan' => 'Doan Dễ Dãi','Duy' => 'Duy Dâm Dê','Ha' => 'Hà Hàm Hồ','Linh' => 'Linh Lạc Loài','Phuong' => 'Phương Phúng Phính','Tri' => 'Trí Trốn Tránh','Thanh' => 'Thạnh Thướt Tha','Hiep' => 'Hiệp Hư Hỏng');
 	// Create connection
 	$conn = new mysqli($servername, $username, $password, $dbname);
 	// Check connection
@@ -226,7 +226,12 @@ input {
     		} 
     		elseif (in_array($key, $keys)) {
     			$name = saveRegisterKey($conn, $key);
-    			$playerErr =  "Thanks $name for registered!!!";
+    			if ($name)
+    			{
+    				$playerErr =  "Thanks $name for registered!!!";
+    				sendMessage("$name has been registered!");
+    			}
+    			else $playerErr =  "You can not register!!!";
     		}
     		else
     		{
@@ -373,7 +378,7 @@ input {
 	$history = getMatchHistory($conn);
 	$scheduleHistory =getScheduleHistory($conn);
 
-	if ($saveMsg == '') $saveMsg = "Congratulations!!! The player of the week is ".getAchivementPlayer(getMostPlayer($playerWinnerWeek)) .".";
+	if ($saveMsg == '' && getAchivementPlayer(getMostPlayer($playerWinnerWeek)) != '') $saveMsg = "Congratulations!!! The player of the week is ".getAchivementPlayer(getMostPlayer($playerWinnerWeek)) .".";
 
 	// Feature function
 	function checkInput($data) {
@@ -388,7 +393,7 @@ input {
 		$dt = new DateTime($datetime);
 		$tz = new DateTimeZone('Asia/Bangkok'); 
 		$dt->setTimezone($tz);
-		echo $dt->format('d-m-Y H:i:s');
+		echo $dt->format('h:ia d/m');
 	}
 
 	function getMostPlayer($array) {
@@ -418,7 +423,7 @@ input {
 		$smartestList = getSmarterPlayer($conn, $playerLostWeek);
 		$playerSmarter = $smartestList[0];
 		$playerLost = $GLOBALS['playerLost'];
-		$nickName = $nickNameList[$key];
+		$nickName = "<a href='/profile/$key'>$nickNameList[$key]</a>";
 		$achive = '';
 		if (in_array($key, getMostPlayer($playerWinnerWeek)))
 			$achive = $achive . " <i class='fa fa-trophy' data-toggle='tooltip' title='The best player of the week' aria-hidden='true'></i>";
@@ -430,7 +435,7 @@ input {
 			$achive = $achive . " <i class='fa fa-battery-empty' data-toggle='tooltip' title='The loser of the week' aria-hidden='true'></i>";
 		if (in_array($key, getMostPlayer($playerLost)))
 			$achive = $achive . " <i class='fa fa-heartbeat' data-toggle='tooltip' title='The worst player ever' aria-hidden='true'></i>";
-		if ($key == 'Thanh') $achive = $achive . " <i class='fa fa-gamepad' data-toggle='tooltip' title='The game master' aria-hidden='true'></i>";
+		if ($key == 'Thanh') $achive = $achive . " <i class='fa fa-gamepad' data-toggle='tooltip' title='The game master' aria-hidden='true'></i> (Retired) ";
 		$html = "<span id='$key' class='avatar'></span><span class=''> $nickName $achive</span>";
 		return $html;
 	}
@@ -788,7 +793,7 @@ input {
 	function getMatchHistory($conn)
 	{
 		$tempHistory = array();
-		$sql = "SELECT * FROM livescore ORDER BY id DESC LIMIT 90";
+		$sql = "SELECT * FROM livescore ORDER BY id DESC LIMIT 30";
 		$result = $conn->query($sql);
 		if ($result->num_rows > 0) {
 			while($row = $result->fetch_assoc()) {
@@ -802,7 +807,7 @@ input {
 
 	function getScheduleHistory($conn)
 	{
-		$sql = "SELECT * FROM schedule WHERE win is not null AND lost is not null  ORDER BY id DESC LIMIT 30";
+		$sql = "SELECT * FROM schedule WHERE win is not null AND lost is not null  ORDER BY id DESC LIMIT 10";
 		$result = $conn->query($sql);
 		$tempHistory = array();
 		if ($result->num_rows > 0) {
@@ -863,11 +868,11 @@ input {
 
 		$msgGroup1 = "Group 1: $playerRank[0], $playerRank[1], $playerRank[2]";
 		// sendMessage($msgGroup1);
-		// sleep(2);
+		// sleep(4);
 
 		$msgGroup2 = "Group 2: $playerRank[3], $playerRank[4], $playerRank[5]";
 		// sendMessage($msgGroup2);
-		// sleep(2);
+		// sleep(4);
 		$temp = array();
 		$i = 0;
 		$playerDivide = count($playerRank) / 2;
@@ -899,7 +904,7 @@ input {
 				$i++;
 				$msg = "Team $i: $player $playerRank[$mate]";
 				// sendMessage($msg);
-				// sleep(2);
+				// sleep(4);
 			}
 		}
 		return $team;
@@ -1017,6 +1022,11 @@ input {
 
 	function saveRegisterKey($conn, $key)
 	{
+		$sql = "SELECT * FROM player WHERE register=1";
+		$conn->query($sql);
+		if ($result->num_rows == 6)
+			return false;
+		$result = $conn->query($sql);
 		$sql = "UPDATE player SET register=1 WHERE password='$key'";
 		$conn->query($sql);
 		$sql = "SELECT * FROM player WHERE password='$key'";
@@ -1108,18 +1118,18 @@ input {
 					<h4><span class="label label-success"><?php echo $saveMsg;?></span></h4>
 				</div>
 				<div class="panel-body">
-					<span>Win = 3 points, Drawn = 1 point, Lost = 0 point</span><br><br>
+					<span>Won = 3 points, Drawn = 1 point, Lost = 0 point</span><br><br>
 					<table class="table table-responsive table-bordered table-striped text-center ranking">
 						<thead>
 							<tr>
-								<th class="text-center">Rank</th>
+								<th class="text-center">R.</th>
 								<th class="text-center">Name</th>
-								<th class="text-center">App</th>
-								<th class="text-center">Won</th>
-								<th class="text-center">Drawn</th>
-								<th class="text-center">Lost</th>
-								<th class="text-center">Point</th>
-								<th class="text-center">Form (Last 10)</th>
+								<th class="text-center">A.</th>
+								<th class="text-center">W.</th>
+								<th class="text-center">D.</th>
+								<th class="text-center">L.</th>
+								<th class="text-center">P.</th>
+								<th class="text-center">Form (10)</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -1151,12 +1161,12 @@ input {
 							<thead>
 								<tr>
 									<th class="text-center">#</th>
-									<th class="text-center">Rank</th>
+									<th class="text-center">R.</th>
 									<th class="text-center">Name</th>
-									<th class="text-center">Won</th>
-									<th class="text-center">Lost</th>
+									<th class="text-center">W.</th>
+									<th class="text-center">L.</th>
 									<th class="text-center">GD</th>
-									<th class="text-center">Form (Last 10)</th>
+									<th class="text-center">Form (10)</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -1307,13 +1317,13 @@ input {
 								<td>The player of the week.</td>
 								<td><?php echo getAchivementPlayer(getMostPlayer($playerWinnerWeek));?>
 								</td>
-								<td><?php echo max($playerWinnerWeek); ?> wins/this week</td>
+								<td><?php echo max($playerWinnerWeek); ?> wons/this week</td>
 							</tr>
 							<tr>
 								<td>2</td>
 								<td>The legend of legends.</td>
 								<td><?php echo getAchivementPlayer(getMostPlayer($playerWinner)); ?></td>
-								<td><?php echo max($playerWinner); ?> wins/total</td>
+								<td><?php echo max($playerWinner); ?> wons/total</td>
 							</tr>
 							<tr>
 								<td>3</td>
@@ -1348,9 +1358,9 @@ input {
 		<table class="table table-responsive table-bordered table-striped">
 			<thead>
 				<tr>
-					<th>Schedule</th>
+					<th>#</th>
 					<th>Date</th>
-					<th>Win</th>
+					<th>Won</th>
 					<th>Lost</th>
 					<th>Type</th>
 				</tr>

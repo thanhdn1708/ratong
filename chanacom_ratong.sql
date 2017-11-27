@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50557
 File Encoding         : 65001
 
-Date: 2017-11-14 10:47:11
+Date: 2017-11-10 07:57:07
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -29,7 +29,7 @@ CREATE TABLE `livescore` (
   `greenpoint` smallint(11) DEFAULT NULL,
   `datetime` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=245 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=233 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of livescore
@@ -266,41 +266,6 @@ INSERT INTO `livescore` VALUES ('229', '114', 'Ha', 'Linh', '5', 'Doan', 'Phuong
 INSERT INTO `livescore` VALUES ('230', '115', 'Doan', 'Linh', '5', 'Ha', 'Duy', '3', '2017-11-09 04:14:26');
 INSERT INTO `livescore` VALUES ('231', '115', 'Ha', 'Duy', '5', 'Thanh', 'Tri', '1', '2017-11-09 04:14:26');
 INSERT INTO `livescore` VALUES ('232', '115', 'Thanh', 'Tri', '0', 'Doan', 'Linh', '5', '2017-11-09 04:14:26');
-INSERT INTO `livescore` VALUES ('233', '117', 'Doan', 'Linh', '5', 'Phuong', 'Tri', '4', '2017-11-10 00:05:22');
-INSERT INTO `livescore` VALUES ('234', '117', 'Phuong', 'Tri', '0', 'Ha', 'Thanh', '5', '2017-11-10 00:05:22');
-INSERT INTO `livescore` VALUES ('235', '117', 'Ha', 'Thanh', '5', 'Doan', 'Linh', '3', '2017-11-10 00:05:22');
-INSERT INTO `livescore` VALUES ('236', '118', 'Tri', 'Linh', '0', 'Phuong', 'Ha', '0', '2017-11-12 21:21:56');
-INSERT INTO `livescore` VALUES ('237', '118', 'Phuong', 'Ha', '0', 'Duy', 'Doan', '0', '2017-11-12 21:21:56');
-INSERT INTO `livescore` VALUES ('238', '118', 'Duy', 'Doan', '0', 'Tri', 'Linh', '0', '2017-11-12 21:21:56');
-INSERT INTO `livescore` VALUES ('239', '120', 'Duy', 'Ha', '5', 'Tri', 'Doan', '0', '2017-11-12 23:45:05');
-INSERT INTO `livescore` VALUES ('240', '120', 'Tri', 'Doan', '2', 'Linh', 'Phuong', '5', '2017-11-12 23:45:05');
-INSERT INTO `livescore` VALUES ('241', '120', 'Linh', 'Phuong', '4', 'Duy', 'Ha', '5', '2017-11-12 23:45:05');
-INSERT INTO `livescore` VALUES ('242', '121', 'Thanh', 'Linh', '1', 'Tri', 'Phuong', '5', '2017-11-13 03:49:07');
-INSERT INTO `livescore` VALUES ('243', '121', 'Tri', 'Phuong', '3', 'Doan', 'Duy', '5', '2017-11-13 03:49:07');
-INSERT INTO `livescore` VALUES ('244', '121', 'Doan', 'Duy', '4', 'Thanh', 'Linh', '5', '2017-11-13 03:49:07');
-
--- ----------------------------
--- Table structure for `player`
--- ----------------------------
-DROP TABLE IF EXISTS `player`;
-CREATE TABLE `player` (
-  `id` smallint(6) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
-  `register` smallint(6) DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
-
--- ----------------------------
--- Records of player
--- ----------------------------
-INSERT INTO `player` VALUES ('1', 'Doan', '3017d911efceb27d1de6a92b70979795', '0');
-INSERT INTO `player` VALUES ('2', 'Duy', 'eab71244afb687f16d8c4f5ee9d6ef0e', '0');
-INSERT INTO `player` VALUES ('3', 'Ha', '5e36941b3d856737e81516acd45edc50', '0');
-INSERT INTO `player` VALUES ('4', 'Linh', '192292e35fbe73f6d2b8d96bd1b6697d', '0');
-INSERT INTO `player` VALUES ('5', 'Phuong', '9c95319bf274672d6eae7eb97c3dfda5', '0');
-INSERT INTO `player` VALUES ('6', 'Tri', '7d0db380a5b95a8ba1da0bca241abda1', '0');
-INSERT INTO `player` VALUES ('7', 'Thanh', '1f2dfa567dcf95833eddf7aec167fec7', '0');
 
 -- ----------------------------
 -- Table structure for `schedule`
@@ -314,7 +279,7 @@ CREATE TABLE `schedule` (
   `datetime` timestamp NULL DEFAULT NULL,
   `schedule_type` smallint(11) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=122 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=116 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of schedule
@@ -424,7 +389,4 @@ INSERT INTO `schedule` VALUES ('111', 'a:3:{i:0;a:2:{i:0;s:3:\"Tri\";i:1;s:4:\"L
 INSERT INTO `schedule` VALUES ('112', 'a:2:{i:0;a:2:{i:0;s:4:\"Doan\";i:1;s:2:\"Ha\";}i:1;a:2:{i:0;s:3:\"Duy\";i:1;s:6:\"Phuong\";}}', null, null, '2017-11-09 01:36:04', '0');
 INSERT INTO `schedule` VALUES ('113', 'a:3:{i:0;a:2:{i:0;s:4:\"Doan\";i:1;s:2:\"Ha\";}i:1;a:2:{i:0;s:3:\"Tri\";i:1;s:4:\"Linh\";}i:2;a:2:{i:0;s:3:\"Duy\";i:1;s:6:\"Phuong\";}}', 'Duy - Phuong', 'Tri - Linh', '2017-11-09 03:51:12', '0');
 INSERT INTO `schedule` VALUES ('114', 'a:3:{i:0;a:2:{i:0;s:4:\"Doan\";i:1;s:6:\"Phuong\";}i:1;a:2:{i:0;s:3:\"Duy\";i:1;s:3:\"Tri\";}i:2;a:2:{i:0;s:2:\"Ha\";i:1;s:4:\"Linh\";}}', 'Ha - Linh', 'Duy - Tri', '2017-11-09 04:00:35', '6');
-INSERT INTO `schedule` VALUES ('115', 'a:3:{i:0;a:2:{i:0;s:4:\"Doan\";i:1;s:4:\"Linh\";}i:1;a:2:{i:0;s:2:\"Ha\";i:1;s:3:\"Duy\";}i:2;a:2:{i:0;s:5:\"Thanh\";i:1;s:3:\"Tri\";}}', 'Doan - Linh', 'Thanh - Tri', '2017-11-09 04:14:26', '10');
-INSERT INTO `schedule` VALUES ('117', 'a:3:{i:0;a:2:{i:0;s:4:\"Doan\";i:1;s:4:\"Linh\";}i:1;a:2:{i:0;s:6:\"Phuong\";i:1;s:3:\"Tri\";}i:2;a:2:{i:0;s:2:\"Ha\";i:1;s:5:\"Thanh\";}}', 'Ha - Thanh', 'Phuong - Tri', '2017-11-10 00:05:22', '0');
-INSERT INTO `schedule` VALUES ('120', 'a:3:{i:0;a:2:{i:0;s:3:\"Duy\";i:1;s:2:\"Ha\";}i:1;a:2:{i:0;s:3:\"Tri\";i:1;s:4:\"Doan\";}i:2;a:2:{i:0;s:4:\"Linh\";i:1;s:6:\"Phuong\";}}', 'Duy - Ha', 'Tri - Doan', '2017-11-12 23:45:05', '0');
-INSERT INTO `schedule` VALUES ('121', 'a:3:{i:0;a:2:{i:0;s:5:\"Thanh\";i:1;s:4:\"Linh\";}i:1;a:2:{i:0;s:3:\"Tri\";i:1;s:6:\"Phuong\";}i:2;a:2:{i:0;s:4:\"Doan\";i:1;s:3:\"Duy\";}}', 'Tri - Phuong', 'Thanh - Linh', '2017-11-13 03:49:07', '7');
+INSERT INTO `schedule` VALUES ('115', 'a:3:{i:0;a:2:{i:0;s:4:\"Doan\";i:1;s:4:\"Linh\";}i:1;a:2:{i:0;s:2:\"Ha\";i:1;s:3:\"Duy\";}i:2;a:2:{i:0;s:5:\"Thanh\";i:1;s:3:\"Tri\";}}', 'Doan - Linh', 'Thanh - Tri', '2017-11-09 04:14:26', '6');

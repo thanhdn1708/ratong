@@ -1,7 +1,7 @@
 <?PHP
 	function sendMessage(){
 		$content = array(
-			"en" => 'Hey guys, Please check your fixture, thanks!'
+			"en" => 'The schedule has been generated!'
 			);
 		
 		$fields = array(
